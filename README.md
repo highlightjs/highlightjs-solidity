@@ -6,6 +6,8 @@ For more about Solidity, see http://solidity.readthedocs.io/
 
 ### Usage
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/highlightjs/highlightjs-solidity.svg)](https://greenkeeper.io/)
+
 Simply include the `highlight.js` script package in your webpage or node app, load up this module and apply it to `hljs`.
 
 If you're not using a build system and just want to embed this in your webpage:
