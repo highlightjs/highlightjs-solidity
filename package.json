@@ -1,0 +1,26 @@
+{
+  "name": "highlightjs-solidity",
+  "version": "1.0.6",
+  "description": "highlight.js syntax definition for Ethereum's Solidity language",
+  "main": "solidity.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pospi/highlightjs-solidity.git"
+  },
+  "keywords": [
+    "Solidity",
+    "Ethereum",
+    "highlight.js",
+    "highlightjs",
+    "syntax"
+  ],
+  "author": "pospi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pospi/highlightjs-solidity/issues"
+  },
+  "homepage": "https://github.com/pospi/highlightjs-solidity#readme"
+}
