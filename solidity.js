@@ -72,6 +72,8 @@ function hljsDefineSolidity(hljs) {
             'assert require revert ' +
             'sha3 sha256 ripemd160 erecover addmod mulmod ' +
             'abi ' +
+            'blockhash ' +
+            'gasleft keccak256 type ' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
             'send call callcode delegatecall',
