@@ -89,6 +89,41 @@ function hljsDefineSolidity(hljs) {
             'send transfer call callcode delegatecall staticcall ',
     };
 
+    var SOL_ASSEMBLY_KEYWORDS = {
+        keyword:
+            'assembly ' +
+            'let ' +
+            'if switch case default for',
+        built_in:
+            //NOTE that push1 through push32, as well as jumpdest, are not included
+            'stop ' +
+            'add sub mul div sdiv mod smod exp not lt gt slt sgt eq iszero ' +
+            'and or xor byte shl shr sar ' +
+            'addmod mulmod signextend keccak256 ' +
+            'jump jumpi pc pop ' +
+            'dup1 dup2 dup3 dup4 dup5 dup6 dup7 dup8 dup9 dup10 dup11 dup12 dup13 dup14 dup15 dup16 ' +
+            'swap1 swap2 swap3 swap4 swap5 swap6 swap7 swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15 swap16 ' +
+            'mload mstore mstore8 sload sstore msize
+            'gas address balance caller callvalue ' +
+            'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
+            'create create2 call callcode delegatecall staticcall ' +
+            'return revert selfdestruct invalid ' +
+            'log0 log1 log2 log3 log4 ' +
+            'origin gasprice blockhash coinbase timestamp number difficulty gaslimit'
+    };
+
+    //covers the special slot/offset notation in assembly
+    var SOL_ASSEMBLY_MEMBERS = {
+        begin: /_/,
+        end: /[^A-Za-z0-9$_]/,
+        excludeBegin: true,
+        excludeEnd: true,
+        keywords: {
+            built_in: 'slot offset'
+        },
+        relevance: 2,
+    };
+
     //like a C number, except:
     //1. no octal literals (leading zeroes disallowed)
     //2. underscores (1 apiece) are allowed between consecutive digits
@@ -194,7 +229,7 @@ function hljsDefineSolidity(hljs) {
                     SOL_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                ]
             },
             { // imports
                 beginKeywords: 'import', end: ';|$',
@@ -206,7 +241,7 @@ function hljsDefineSolidity(hljs) {
                     HEX_QUOTE_SRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                ]
             },
             { // using
                 beginKeywords: 'import', end: ';|$',
@@ -214,7 +249,7 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                ]
             },
             { // pragmas
                 beginKeywords: 'pragma', end: ';|$',
@@ -225,8 +260,37 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                ]
             },
+            { //assembly block
+                begin: /assembly\s*{/, end: '}',
+                keywords: SOL_ASSEMBLY_KEYWORDS,
+                contains: [
+                    hljs.APOS_STRING_MODE,
+                    hljs.QUOTE_STRING_MODE,
+                    HEX_APOS_STRING_MODE,
+                    HEX_QUOTE_SRING_MODE,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
+                    SOL_NUMBER,
+                    SOL_ASSEMBLY_MEMBERS,
+                    { //block within assembly
+                        begin: '{', end: '}',
+                        keywords: SOL_ASSEMBLY_KEYWORDS,
+                        contains: [
+                            hljs.APOS_STRING_MODE,
+                            hljs.QUOTE_STRING_MODE,
+                            HEX_APOS_STRING_MODE,
+                            HEX_QUOTE_SRING_MODE,
+                            hljs.C_LINE_COMMENT_MODE,
+                            hljs.C_BLOCK_COMMENT_MODE,
+                            SOL_NUMBER,
+                            SOL_ASSEMBLY_MEMBERS,
+                            'self'
+                        ]
+                    }
+                ]
+            }
         ],
         illegal: /#/,
     };
