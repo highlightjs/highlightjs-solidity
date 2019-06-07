@@ -4,8 +4,6 @@
  * @see https://github.com/isagalaev/highlight.js
  *
  * :TODO:
- * - fixed point numbers
- * - `_` inside modifiers
  * - assembly block keywords
  *
  * @package: highlightjs-solidity
@@ -16,58 +14,90 @@
 var module = module ? module : {};     // shim for browser use
 
 function hljsDefineSolidity(hljs) {
+
+    //first: let's set up all parameterized types (bytes, int, uint, fixed, ufixed)
+    //NOTE: I'm *not* including the unparameterized versions here, those are included
+    //manually
+    var byteSizes = [];
+    for(var i = 0; i < 32; i++) {
+        byteSizes[i] = i+1;
+    }
+    var numSizes = byteSizes.map(function(bytes) { return bytes * 8 } );
+    for(i = 0; i <= 80; i++) {
+        precisions[i] = i;
+    }
+
+    var bytesTypes = byteSizes.map(function(size) { return 'bytes' + size });
+    var bytesTypesString = bytesTypes.join(' ') + ' ';
+
+    var uintTypes = numSizes.map(function(size) { return 'uint' + size });
+    var uintTypesString = uintTypes.join(' ') + ' ';
+
+    var intTypes = numSizes.map(function(size) { return 'int' + size });
+    var intTypesString = intTypes.join(' ') + ' ';
+
+    var sizePrecisionPairs = [].concat.apply([],
+        numSizes.map(function(size) {
+            return precisions.map(function(precision) {
+                return size + 'x' + precision;
+            })
+        })
+    );
+
+    var fixedTypes = sizePrecisionPairs.map(function(pair) { return 'fixed' + pair });
+    var fixedTypesString = fixedTypes.join(' ') + ' ';
+
+    var ufixedTypes = sizePrecisionPairs.map(function(pair) { return 'ufixed' + pair });
+    var ufixedTypesString = ufixedTypes.join(' ') + ' ';
+
     var SOL_KEYWORDS = {
         keyword:
             'var bool string ' +
-            'int uint int8 uint8 int16 uint16 int24 uint24 int32 uint32 ' +
-            'int40 uint40 int48 uint48 int56 uint56 int64 uint64 ' +
-            'int72 uint72 int80 uint80 int88 uint88 int96 uint96 ' +
-            'int104 uint104 int112 uint112 int120 uint120 int128 uint128 ' +
-            'int136 uint136 int144 uint144 int152 uint152 int160 uint160 ' +
-            'int168 uint168 int176 uint176 int184 uint184 int192 uint192 ' +
-            'int200 uint200 int208 uint208 int216 uint216 int224 uint224 ' +
-            'int232 uint232 int240 uint240 int248 uint248 int256 uint256 ' +
-            'byte bytes bytes1 bytes2 bytes3 bytes4 bytes5 bytes6 bytes7 bytes8 ' +
-            'bytes9 bytes10 bytes11 bytes12 bytes13 bytes14 bytes15 bytes16 ' +
-            'bytes17 bytes18 bytes19 bytes20 bytes21 bytes22 bytes23 bytes24 ' +
-            'bytes25 bytes26 bytes27 bytes28 bytes29 bytes30 bytes31 bytes32 ' +
+            'int uint ' + intTypesString + uintTypesString +
+            'byte bytes ' + bytesTypesString +
+            'fixed ufixed ' + fixedTypesString + ufixedTypesString +
             'enum struct mapping address ' +
 
             'new delete ' +
-            'if else for while continue break return throw assert require revert ' +
+            'if else for while continue break return throw emit ' +
+            //NOTE: doesn't always act as a keyword, but I think it's fine to include
+            '_ ' +
 
-            'function modifier event ' +
+            'function modifier event constructor ' +
             'constant anonymous indexed ' +
-            'storage memory ' +
-            'external public internal pure view private returns ' +
+            'storage memory calldata ' +
+            'external public internal payable pure view private returns ' +
 
-            'import using ' +
+            'import using pragma ' +
             'contract interface library ' +
             'assembly',
         literal:
             'true false ' +
             'wei szabo finney ether ' +
-            'second seconds minute minutes hour hours day days week weeks year years',
+            'seconds minutes hours days weeks years',
         built_in:
             'self ' +   // :NOTE: not a real keyword, but a convention used in storage manipulation libraries
-            'this super selfdestruct ' +
+            'this super selfdestruct suicide ' +
             'now ' +
-            'msg ' +
-            'block ' +
-            'tx ' +
-            'sha3 sha256 ripemd160 erecover addmod mulmod ' +
+            'msg block tx abi ' +
+            'type '
+            'blockhash gasleft ' +
+            'assert revert require ' +
+            'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send call callcode delegatecall',
+            'send transfer call callcode delegatecall staticcall ',
     };
+
+    //like a C number, except:
+    //1. no octal literals (leading zeroes disallowed)
+    //2. underscores (1 apiece) are allowed between consecutive digits
+    //(including hex digits)
+    var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?)/;
 
     var SOL_NUMBER = {
         className: 'number',
-        variants: [
-            { begin: '\\b(0[bB][01]+)' },
-            { begin: '\\b(0[oO][0-7]+)' },
-            { begin: hljs.C_NUMBER_RE },
-        ],
+        begin: SOL_NUMBER_RE,
         relevance: 0,
     };
 
@@ -86,13 +116,22 @@ function hljsDefineSolidity(hljs) {
         ],
     };
 
+    var HEX_APOS_STRING_MODE = {
+      className: 'string',
+      begin: /hex'[0-9a-fA-F]'/,
+    };
+    var HEX_QUOTE_STRING_MODE = {
+      className: 'string',
+      begin: /hex"[0-9a-fA-F]"/,
+    };
+
     var SOL_RESERVED_MEMBERS = {
         begin: /\.\s*/,  // match any property access up to start of prop
         end: /[^A-Za-z0-9$_\.]/,
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'gas value send call callcode delegatecall balance length push',
+            built_in: 'gas value send transfer call callcode delegatecall staticcall balance length push pop name creationCode runtimeCode',
         },
         relevance: 2,
     };
@@ -120,6 +159,8 @@ function hljsDefineSolidity(hljs) {
             // basic literal definitions
             hljs.APOS_STRING_MODE,
             hljs.QUOTE_STRING_MODE,
+            HEX_APOS_STRING_MODE,
+            HEX_QUOTE_SRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
@@ -132,13 +173,16 @@ function hljsDefineSolidity(hljs) {
                         keywords: SOL_KEYWORDS,
                     }),
                     SOL_FUNC_PARAMS,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
                 ],
                 illegal: /\[|%/,
             },
             // built-in members
-            makeBuiltinProps('msg', 'data sender sig'),
+            makeBuiltinProps('msg', 'gas value data sender sig'),
             makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit number timestamp '),
             makeBuiltinProps('tx', 'gasprice origin'),
+            makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature'),
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
@@ -148,14 +192,39 @@ function hljsDefineSolidity(hljs) {
                     { beginKeywords: 'is' },
                     hljs.UNDERSCORE_TITLE_MODE,
                     SOL_FUNC_PARAMS,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
                 ],
             },
             { // imports
-                beginKeywords: 'import', end: '[;$]',
+                beginKeywords: 'import', end: ';|$',
                 keywords: 'import * from as',
                 contains: [
                     hljs.APOS_STRING_MODE,
                     hljs.QUOTE_STRING_MODE,
+                    HEX_APOS_STRING_MODE,
+                    HEX_QUOTE_SRING_MODE,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
+                ],
+            },
+            { // using
+                beginKeywords: 'import', end: ';|$',
+                keywords: 'using * for',
+                contains: [
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
+                ],
+            },
+            { // pragmas
+                beginKeywords: 'pragma', end: ';|$',
+                keywords: {
+                    keyword: 'pragma solidity experimental',
+                    built_in: 'ABIEncoderV2 SMTChecker'
+                },
+                contains: [
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE,
                 ],
             },
         ],
