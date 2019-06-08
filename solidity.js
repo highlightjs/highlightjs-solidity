@@ -278,6 +278,7 @@ function hljsDefineSolidity(hljs) {
             { //assembly block
                 begin: /assembly\s*{/, end: '}',
                 keywords: SOL_ASSEMBLY_KEYWORDS,
+                lexemes: SOL_LEXEMES_RE,
                 contains: [
                     hljs.APOS_STRING_MODE,
                     hljs.QUOTE_STRING_MODE,
@@ -290,6 +291,7 @@ function hljsDefineSolidity(hljs) {
                     { //block within assembly
                         begin: '{', end: '}',
                         keywords: SOL_ASSEMBLY_KEYWORDS,
+                        lexemes: SOL_LEXEMES_RE,
                         contains: [
                             hljs.APOS_STRING_MODE,
                             hljs.QUOTE_STRING_MODE,
