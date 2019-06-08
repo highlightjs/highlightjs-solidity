@@ -125,6 +125,9 @@ function hljsDefineSolidity(hljs) {
       begin: /hex"[0-9a-fA-F]"/,
     };
 
+    //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
+    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
+
     var SOL_RESERVED_MEMBERS = {
         begin: /\.\s*/,  // match any property access up to start of prop
         end: /[^A-Za-z0-9$_\.]/,
@@ -136,12 +139,20 @@ function hljsDefineSolidity(hljs) {
         relevance: 2,
     };
 
+    var SOL_TITLE_MODE =
+        hljs.inherit(hljs.TITLE_MODE, {
+            begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
+            lexemes: SOL_LEXEMES_RE,
+            keywords: SOL_KEYWORDS,
+        });
+
     function makeBuiltinProps(obj, props) {
         return {
             begin: obj + '\\.\\s*',
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
+            lexemes: SOL_LEXEMES_RE,
             keywords: {
                 built_in: obj + ' ' + props,
             },
@@ -155,6 +166,7 @@ function hljsDefineSolidity(hljs) {
     return {
         aliases: ['sol'],
         keywords: SOL_KEYWORDS,
+        lexemes: SOL_LEXEMES_RE,
         contains: [
             // basic literal definitions
             hljs.APOS_STRING_MODE,
@@ -166,12 +178,10 @@ function hljsDefineSolidity(hljs) {
             SOL_NUMBER,
             { // functions
                 className: 'function',
+                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'function modifier event', end: /[{;]/, excludeEnd: true,
                 contains: [
-                    hljs.inherit(hljs.TITLE_MODE, {
-                        begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
-                        keywords: SOL_KEYWORDS,
-                    }),
+                    SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
@@ -186,11 +196,12 @@ function hljsDefineSolidity(hljs) {
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
+                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'contract interface library', end: /[{]/, excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
-                    { beginKeywords: 'is' },
-                    hljs.UNDERSCORE_TITLE_MODE,
+                    { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
+                    SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
@@ -198,6 +209,7 @@ function hljsDefineSolidity(hljs) {
             },
             { // imports
                 beginKeywords: 'import', end: ';|$',
+                lexemes: SOL_LEXEMES_RE,
                 keywords: 'import * from as',
                 contains: [
                     hljs.APOS_STRING_MODE,
@@ -210,6 +222,7 @@ function hljsDefineSolidity(hljs) {
             },
             { // using
                 beginKeywords: 'import', end: ';|$',
+                lexemes: SOL_LEXEMES_RE,
                 keywords: 'using * for',
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
@@ -218,6 +231,7 @@ function hljsDefineSolidity(hljs) {
             },
             { // pragmas
                 beginKeywords: 'pragma', end: ';|$',
+                lexemes: SOL_LEXEMES_RE,
                 keywords: {
                     keyword: 'pragma solidity experimental',
                     built_in: 'ABIEncoderV2 SMTChecker'
