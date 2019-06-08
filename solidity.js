@@ -3,9 +3,6 @@
  *
  * @see https://github.com/isagalaev/highlight.js
  *
- * :TODO:
- * - assembly block keywords
- *
  * @package: highlightjs-solidity
  * @author:  Sam Pospischil <sam@changegiving.com>
  * @since:   2016-07-01
@@ -86,28 +83,30 @@ function hljsDefineSolidity(hljs) {
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall ',
+            'send transfer call callcode delegatecall staticcall '
     };
 
     var SOL_ASSEMBLY_KEYWORDS = {
         keyword:
             'assembly ' +
             'let ' +
-            'if switch case default for',
+            'if switch case default for ' +
+            //NOTE: I'm counting most opcodes as builtins, but the following ones I'm
+            //treating as keywords because they alter control flow or halt execution
+            'jump jumpi ' +
+            'stop return revert selfdestruct invalid',
         built_in:
             //NOTE that push1 through push32, as well as jumpdest, are not included
-            'stop ' +
             'add sub mul div sdiv mod smod exp not lt gt slt sgt eq iszero ' +
             'and or xor byte shl shr sar ' +
             'addmod mulmod signextend keccak256 ' +
-            'jump jumpi pc pop ' +
+            'pc pop ' +
             'dup1 dup2 dup3 dup4 dup5 dup6 dup7 dup8 dup9 dup10 dup11 dup12 dup13 dup14 dup15 dup16 ' +
             'swap1 swap2 swap3 swap4 swap5 swap6 swap7 swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15 swap16 ' +
-            'mload mstore mstore8 sload sstore msize
+            'mload mstore mstore8 sload sstore msize ' +
             'gas address balance caller callvalue ' +
             'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
             'create create2 call callcode delegatecall staticcall ' +
-            'return revert selfdestruct invalid ' +
             'log0 log1 log2 log3 log4 ' +
             'origin gasprice blockhash coinbase timestamp number difficulty gaslimit'
     };
@@ -115,7 +114,7 @@ function hljsDefineSolidity(hljs) {
     //covers the special slot/offset notation in assembly
     var SOL_ASSEMBLY_MEMBERS = {
         begin: /_/,
-        end: /[^A-Za-z0-9$_]/,
+        end: /[^A-Za-z0-9$]/,
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
