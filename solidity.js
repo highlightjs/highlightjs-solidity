@@ -23,6 +23,7 @@ function hljsDefineSolidity(hljs) {
         byteSizes[i] = i+1;
     }
     var numSizes = byteSizes.map(function(bytes) { return bytes * 8 } );
+    var precisions = [];
     for(i = 0; i <= 80; i++) {
         precisions[i] = i;
     }
@@ -80,20 +81,23 @@ function hljsDefineSolidity(hljs) {
             'this super selfdestruct suicide ' +
             'now ' +
             'msg block tx abi ' +
-            'type '
+            'type ' +
             'blockhash gasleft ' +
             'assert revert require ' +
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall ',
+            'send transfer call callcode delegatecall staticcall ' +
+            'log0 log1 log2 log3 log4',
     };
 
     //like a C number, except:
     //1. no octal literals (leading zeroes disallowed)
     //2. underscores (1 apiece) are allowed between consecutive digits
     //(including hex digits)
-    var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?)/;
+    //also, I've replaced all instances of \b (word boundary)
+    //with (?<![A-Za-z0-9_$])
+    var SOL_NUMBER_RE = /-?((?<![A-Za-z0-9_$])0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<![A-Za-z0-9_$])[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|(?<![A-Za-z0-9_$])0)/;
 
     var SOL_NUMBER = {
         className: 'number',
@@ -113,16 +117,17 @@ function hljsDefineSolidity(hljs) {
             hljs.APOS_STRING_MODE,
             hljs.QUOTE_STRING_MODE,
             SOL_NUMBER,
-        ],
+            'self' //to account for mappings and fn variables
+        ]
     };
 
     var HEX_APOS_STRING_MODE = {
       className: 'string',
-      begin: /hex'[0-9a-fA-F]'/,
+      begin: /hex'[0-9a-fA-F]*'/,
     };
     var HEX_QUOTE_STRING_MODE = {
       className: 'string',
-      begin: /hex"[0-9a-fA-F]"/,
+      begin: /hex"[0-9a-fA-F]*"/,
     };
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
@@ -148,7 +153,7 @@ function hljsDefineSolidity(hljs) {
 
     function makeBuiltinProps(obj, props) {
         return {
-            begin: obj + '\\.\\s*',
+            begin: "(?<![A-Za-z0-9_$])" + obj + '\\.\\s*',
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
@@ -157,7 +162,7 @@ function hljsDefineSolidity(hljs) {
                 built_in: obj + ' ' + props,
             },
             contains: [
-                SOL_RESERVED_MEMBERS,
+                SOL_RESERVED_MEMBERS
             ],
             relevance: 10,
         };
@@ -172,21 +177,21 @@ function hljsDefineSolidity(hljs) {
             hljs.APOS_STRING_MODE,
             hljs.QUOTE_STRING_MODE,
             HEX_APOS_STRING_MODE,
-            HEX_QUOTE_SRING_MODE,
+            HEX_QUOTE_STRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
-                beginKeywords: 'function modifier event', end: /[{;]/, excludeEnd: true,
+                beginKeywords: 'function modifier event constructor', end: /[{;]/, excludeEnd: true,
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE
                 ],
-                illegal: /\[|%/,
+                illegal: /%/,
             },
             // built-in members
             makeBuiltinProps('msg', 'gas value data sender sig'),
@@ -197,37 +202,49 @@ function hljsDefineSolidity(hljs) {
             { // contracts & libraries & interfaces
                 className: 'class',
                 lexemes: SOL_LEXEMES_RE,
-                beginKeywords: 'contract interface library', end: /[{]/, excludeEnd: true,
+                beginKeywords: 'contract interface library', end: '{', excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
                     { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                    hljs.C_BLOCK_COMMENT_MODE
+                ]
+            },
+            { // structs & enums
+                lexemes: SOL_LEXEMES_RE,
+                beginKeywords: 'struct enum', end: '{', excludeEnd: true,
+                illegal: /[:"\[\]]/,
+                contains: [
+                    SOL_TITLE_MODE,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE
+                ]
             },
             { // imports
                 beginKeywords: 'import', end: ';|$',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: 'import * from as',
                 contains: [
+                    SOL_TITLE_MODE,
                     hljs.APOS_STRING_MODE,
                     hljs.QUOTE_STRING_MODE,
                     HEX_APOS_STRING_MODE,
-                    HEX_QUOTE_SRING_MODE,
+                    HEX_QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                    hljs.C_BLOCK_COMMENT_MODE
+                ]
             },
             { // using
-                beginKeywords: 'import', end: ';|$',
+                beginKeywords: 'using', end: ';|$',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: 'using * for',
                 contains: [
+                    SOL_TITLE_MODE,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE,
-                ],
+                    hljs.C_BLOCK_COMMENT_MODE
+                ]
             },
             { // pragmas
                 beginKeywords: 'pragma', end: ';|$',
@@ -238,11 +255,11 @@ function hljsDefineSolidity(hljs) {
                 },
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE,
-                ],
-            },
+                    hljs.C_BLOCK_COMMENT_MODE
+                ]
+            }
         ],
-        illegal: /#/,
+        illegal: /#/
     };
 }
 
