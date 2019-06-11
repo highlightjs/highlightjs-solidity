@@ -259,7 +259,7 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // imports
-                beginKeywords: 'import', end: ';|$',
+                beginKeywords: 'import', end: ';',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: 'import * from as',
                 contains: [
@@ -273,7 +273,7 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // using
-                beginKeywords: 'using', end: ';|$',
+                beginKeywords: 'using', end: ';',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: 'using * for',
                 contains: [
@@ -283,7 +283,7 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // pragmas
-                beginKeywords: 'pragma', end: ';|$',
+                beginKeywords: 'pragma', end: ';',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: {
                     keyword: 'pragma solidity experimental',
@@ -296,6 +296,7 @@ function hljsDefineSolidity(hljs) {
             },
             { //assembly block
                 begin: /assembly/, end: '}',
+		excludeBegin: true,
                 keywords: SOL_ASSEMBLY_KEYWORDS,
                 lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                 contains: [
