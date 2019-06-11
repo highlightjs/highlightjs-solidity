@@ -294,22 +294,15 @@ function hljsDefineSolidity(hljs) {
                     hljs.C_BLOCK_COMMENT_MODE
                 ]
             },
-            { //assembly block
-                begin: /assembly/, end: '}',
-		excludeBegin: true,
-                keywords: SOL_ASSEMBLY_KEYWORDS,
-                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+            { //assembly section
+                beginKeywords: 'assembly',
+                end: /\b\B/, //unsatisfiable regex; ended by endsParent instead
                 contains: [
-                    hljs.APOS_STRING_MODE,
-                    hljs.QUOTE_STRING_MODE,
-                    HEX_APOS_STRING_MODE,
-                    HEX_QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                    SOL_NUMBER,
-                    SOL_ASSEMBLY_MEMBERS,
-                    { //block within assembly
+                    { //the actual *block* in the assembly section
                         begin: '{', end: '}',
+                        endsParent: true,
                         keywords: SOL_ASSEMBLY_KEYWORDS,
                         lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                         contains: [
@@ -321,7 +314,22 @@ function hljsDefineSolidity(hljs) {
                             hljs.C_BLOCK_COMMENT_MODE,
                             SOL_NUMBER,
                             SOL_ASSEMBLY_MEMBERS,
-                            'self'
+                            { //block within assembly; note the lack of endsParent
+                                begin: '{', end: '}',
+                                keywords: SOL_ASSEMBLY_KEYWORDS,
+                                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+                                contains: [
+                                    hljs.APOS_STRING_MODE,
+                                    hljs.QUOTE_STRING_MODE,
+                                    HEX_APOS_STRING_MODE,
+                                    HEX_QUOTE_STRING_MODE,
+                                    hljs.C_LINE_COMMENT_MODE,
+                                    hljs.C_BLOCK_COMMENT_MODE,
+                                    SOL_NUMBER,
+                                    SOL_ASSEMBLY_MEMBERS,
+                                    'self'
+                                ]
+                            }
                         ]
                     }
                 ]
