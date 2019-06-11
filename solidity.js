@@ -116,7 +116,7 @@ function hljsDefineSolidity(hljs) {
     //covers the special slot/offset notation in assembly
     var SOL_ASSEMBLY_MEMBERS = {
         begin: /_/,
-        end: /[^A-Za-z0-9$]/,
+        end: /[^A-Za-z0-9$.]/,
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
@@ -166,6 +166,8 @@ function hljsDefineSolidity(hljs) {
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
     var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
+    //in assembly, identifiers can contain periods (but may not start with them)
+    var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
 
     var SOL_RESERVED_MEMBERS = {
         begin: /\.\s*/,  // match any property access up to start of prop
@@ -295,12 +297,12 @@ function hljsDefineSolidity(hljs) {
             { //assembly block
                 begin: /assembly\s*{/, end: '}',
                 keywords: SOL_ASSEMBLY_KEYWORDS,
-                lexemes: SOL_LEXEMES_RE,
+                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                 contains: [
                     hljs.APOS_STRING_MODE,
                     hljs.QUOTE_STRING_MODE,
                     HEX_APOS_STRING_MODE,
-                    HEX_QUOTE_SRING_MODE,
+                    HEX_QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
                     SOL_NUMBER,
@@ -308,12 +310,12 @@ function hljsDefineSolidity(hljs) {
                     { //block within assembly
                         begin: '{', end: '}',
                         keywords: SOL_ASSEMBLY_KEYWORDS,
-                        lexemes: SOL_LEXEMES_RE,
+                        lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                         contains: [
                             hljs.APOS_STRING_MODE,
                             hljs.QUOTE_STRING_MODE,
                             HEX_APOS_STRING_MODE,
-                            HEX_QUOTE_SRING_MODE,
+                            HEX_QUOTE_STRING_MODE,
                             hljs.C_LINE_COMMENT_MODE,
                             hljs.C_BLOCK_COMMENT_MODE,
                             SOL_NUMBER,
