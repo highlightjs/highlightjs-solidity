@@ -295,7 +295,7 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { //assembly block
-                begin: /assembly\s*{/, end: '}',
+                begin: /assembly/, end: '}',
                 keywords: SOL_ASSEMBLY_KEYWORDS,
                 lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                 contains: [
