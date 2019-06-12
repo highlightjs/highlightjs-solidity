@@ -13,7 +13,7 @@ var module = module ? module : {};     // shim for browser use
 function hljsDefineSolidity(hljs) {
 
     //first: let's set up all parameterized types (bytes, int, uint, fixed, ufixed)
-    //NOTE: I'm *not* including the unparameterized versions here, those are included
+    //NOTE: unparameterized versions are *not* included here, those are included
     //manually
     var byteSizes = [];
     for(var i = 0; i < 32; i++) {
@@ -58,7 +58,7 @@ function hljsDefineSolidity(hljs) {
 
             'new delete ' +
             'if else for while continue break return throw emit ' +
-            //NOTE: doesn't always act as a keyword, but I think it's fine to include
+            //NOTE: doesn't always act as a keyword, but seems fine to include
             '_ ' +
 
             'function modifier event constructor ' +
@@ -93,7 +93,7 @@ function hljsDefineSolidity(hljs) {
             'assembly ' +
             'let ' +
             'if switch case default for ' +
-            //NOTE: I'm counting most opcodes as builtins, but the following ones I'm
+            //NOTE: We're counting most opcodes as builtins, but the following ones we're
             //treating as keywords because they alter control flow or halt execution
             'jump jumpi ' +
             'stop return revert selfdestruct invalid',
@@ -129,8 +129,7 @@ function hljsDefineSolidity(hljs) {
     //1. no octal literals (leading zeroes disallowed)
     //2. underscores (1 apiece) are allowed between consecutive digits
     //(including hex digits)
-    //also, I've replaced all instances of \b (word boundary)
-    //with (?<![A-Za-z0-9_$])
+    //also, all instances of \b (word boundary) have been replaced with (?<![A-Za-z0-9_$])
     var SOL_NUMBER_RE = /-?((?<![A-Za-z0-9_$])0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<![A-Za-z0-9_$])[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|(?<![A-Za-z0-9_$])0)/;
 
     var SOL_NUMBER = {
