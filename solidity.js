@@ -175,7 +175,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'gas value send transfer call callcode delegatecall staticcall balance length push pop name creationCode runtimeCode',
+            built_in: 'gas value selector send transfer call callcode delegatecall staticcall balance length push pop name creationCode runtimeCode',
         },
         relevance: 2,
     };
