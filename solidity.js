@@ -67,7 +67,7 @@ function hljsDefineSolidity(hljs) {
             'external public internal payable pure view private returns ' +
 
             'import using pragma ' +
-            'contract interface library ' +
+            'contract interface library is ' +
             'assembly',
         literal:
             'true false ' +
@@ -282,6 +282,7 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // pragmas
+                className: 'meta',
                 beginKeywords: 'pragma', end: ';',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: {
@@ -290,7 +291,9 @@ function hljsDefineSolidity(hljs) {
                 },
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE
+                    hljs.C_BLOCK_COMMENT_MODE,
+                    hljs.inherit(hljs.APOS_STRING_MODE, { className: 'meta-string' }),
+                    hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'meta-string' })
                 ]
             },
             { //assembly section
