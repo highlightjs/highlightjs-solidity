@@ -72,6 +72,15 @@ it('numbers', function () {
   }
 });
 
-it('identifier with dollar sign and digit', function () {
+it('identifier with dollar sign', function () {
   assert.deepEqual(getTokens('id$1'), [['none', 'id$1']]);
+  assert.deepEqual(getTokens('id$tx'), [['none', 'id$tx']]);
+});
+
+it('builtins', function () {
+  const builtins = ['msg', 'block', 'tx', 'abi'];
+
+  for (const b of builtins) {
+    assert.deepEqual(getTokens(b), [['built_in', b]]);
+  }
 });
