@@ -3,6 +3,7 @@
   "version": "1.0.7",
   "description": "highlight.js syntax definition for Ethereum's Solidity language",
   "main": "solidity.js",
+  "files": [],
   "scripts": {
     "test": "mocha"
   },
