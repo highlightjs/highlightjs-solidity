@@ -138,9 +138,9 @@ function hljsDefineSolidity(hljs) {
     //1. no octal literals (leading zeroes disallowed)
     //2. underscores (1 apiece) are allowed between consecutive digits
     //(including hex digits)
-    //also, all instances of \b (word boundary) have been replaced with (?<![A-Za-z0-9_$])
+    //also, all instances of \b (word boundary) have been replaced with (?<!\$)\b
     if (isNegativeLookbehindAvailable()) {
-        var SOL_NUMBER_RE = /-?((?<![A-Za-z0-9_$])0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<![A-Za-z0-9_$])[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|(?<![A-Za-z0-9_$])0)/;
+        var SOL_NUMBER_RE = /-?((?<!\$)\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<!\$)\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|(?<!\$)\b0)/;
     } else {
         var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|\b0)/;
     }
@@ -202,7 +202,7 @@ function hljsDefineSolidity(hljs) {
 
     function makeBuiltinProps(obj, props) {
         return {
-            begin: (isNegativeLookbehindAvailable() ? '(?<![A-Za-z0-9_$])' : '\\b') + obj + '\\.\\s*',
+            begin: (isNegativeLookbehindAvailable() ? '\\b' : '\\b') + obj + '\\.\\s*',
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
