@@ -71,3 +71,7 @@ it('numbers', function () {
     assert.notDeepEqual(getTokens(n), [['number', n]]);
   }
 });
+
+it('identifier with dollar sign and digit', function () {
+  assert.deepEqual(getTokens('id$1'), [['none', 'id$1']]);
+});
