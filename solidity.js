@@ -202,7 +202,7 @@ function hljsDefineSolidity(hljs) {
 
     function makeBuiltinProps(obj, props) {
         return {
-            begin: (isNegativeLookbehindAvailable() ? '\\b' : '\\b') + obj + '\\.\\s*',
+            begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + obj + '\\.\\s*',
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
