@@ -66,7 +66,7 @@ function hljsDefineSolidity(hljs) {
             'storage memory calldata ' +
             'external public internal payable pure view private returns ' +
 
-            'import using pragma ' +
+            'import from as using pragma ' +
             'contract interface library is ' +
             'assembly',
         literal:
