@@ -174,11 +174,11 @@ function hljsDefineSolidity(hljs) {
 
     var HEX_APOS_STRING_MODE = {
       className: 'string',
-      begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/,
+      begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
     };
     var HEX_QUOTE_STRING_MODE = {
       className: 'string',
-      begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/,
+      begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
     };
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
