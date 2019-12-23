@@ -57,17 +57,18 @@ function hljsDefineSolidity(hljs) {
             'enum struct mapping address ' +
 
             'new delete ' +
-            'if else for while continue break return throw emit ' +
+            'if else for while continue break return throw emit try catch ' +
             //NOTE: doesn't always act as a keyword, but seems fine to include
             '_ ' +
 
-            'function modifier event constructor ' +
+            'function modifier event constructor fallback receive ' +
+            'virtual override ' +
             'constant anonymous indexed ' +
             'storage memory calldata ' +
             'external public internal payable pure view private returns ' +
 
             'import from as using pragma ' +
-            'contract interface library is ' +
+            'contract interface library is abstract ' +
             'assembly',
         literal:
             'true false ' +
@@ -81,6 +82,7 @@ function hljsDefineSolidity(hljs) {
             'type ' +
             'blockhash gasleft ' +
             'assert revert require ' +
+	    'Error ' + //Not exactly a builtin? but this seems the best category for it
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             'log0 log1 log2 log3 log4' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
@@ -92,7 +94,7 @@ function hljsDefineSolidity(hljs) {
         keyword:
             'assembly ' +
             'let ' +
-            'if switch case default for ' +
+            'if switch case default for leave ' +
             //NOTE: We're counting most opcodes as builtins, but the following ones we're
             //treating as keywords because they alter control flow or halt execution
             'jump jumpi ' +
@@ -172,11 +174,11 @@ function hljsDefineSolidity(hljs) {
 
     var HEX_APOS_STRING_MODE = {
       className: 'string',
-      begin: /hex'[0-9a-fA-F]*'/,
+      begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
     };
     var HEX_QUOTE_STRING_MODE = {
       className: 'string',
-      begin: /hex"[0-9a-fA-F]*"/,
+      begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
     };
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
@@ -190,7 +192,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'gas value selector send transfer call callcode delegatecall staticcall balance length push pop name creationCode runtimeCode',
+            built_in: 'gas value selector address send transfer call callcode delegatecall staticcall balance length push pop name creationCode runtimeCode',
         },
         relevance: 2,
     };
