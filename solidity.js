@@ -87,7 +87,8 @@ function hljsDefineSolidity(hljs) {
             'log0 log1 log2 log3 log4' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall ',
+            'send transfer call callcode delegatecall staticcall ' +
+            'gas value salt ' //not sure these really belong here but seems a decent place?
     };
 
     var SOL_ASSEMBLY_KEYWORDS = {
