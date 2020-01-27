@@ -82,7 +82,7 @@ function hljsDefineSolidity(hljs) {
             'type ' +
             'blockhash gasleft ' +
             'assert revert require ' +
-	    'Error ' + //Not exactly a builtin? but this seems the best category for it
+            'Error ' + //Not exactly a builtin? but this seems the best category for it
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             'log0 log1 log2 log3 log4' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
