@@ -87,8 +87,7 @@ function hljsDefineSolidity(hljs) {
             'log0 log1 log2 log3 log4' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall ' +
-            'gas value salt ' //not sure these really belong here but seems a decent place?
+            'send transfer call callcode delegatecall staticcall '
     };
 
     var SOL_ASSEMBLY_KEYWORDS = {
@@ -316,6 +315,10 @@ function hljsDefineSolidity(hljs) {
                     hljs.inherit(hljs.APOS_STRING_MODE, { className: 'meta-string' }),
                     hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'meta-string' })
                 ]
+            },
+            { //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
+                className: 'built_in',
+                begin: /(gas|value|salt):/
             },
             { //assembly section
                 beginKeywords: 'assembly',
