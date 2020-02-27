@@ -206,6 +206,12 @@ function hljsDefineSolidity(hljs) {
             keywords: SOL_KEYWORDS,
         });
 
+    var SOL_SPECIAL_PARAMETERS = {
+        //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
+        className: 'built_in',
+        begin: /(gas|value|salt):/
+    };
+
     function makeBuiltinProps(obj, props) {
         return {
             begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + obj + '\\.\\s*',
@@ -236,6 +242,7 @@ function hljsDefineSolidity(hljs) {
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
+            SOL_SPECIAL_PARAMETERS,
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
@@ -243,6 +250,7 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
+                    SOL_SPECIAL_PARAMETERS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE
                 ],
@@ -263,6 +271,7 @@ function hljsDefineSolidity(hljs) {
                     { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
+                    SOL_SPECIAL_PARAMETERS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE
                 ]
@@ -315,10 +324,6 @@ function hljsDefineSolidity(hljs) {
                     hljs.inherit(hljs.APOS_STRING_MODE, { className: 'meta-string' }),
                     hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'meta-string' })
                 ]
-            },
-            { //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
-                className: 'built_in',
-                begin: /(gas|value|salt):/
             },
             { //assembly section
                 beginKeywords: 'assembly',
