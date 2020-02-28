@@ -82,12 +82,12 @@ function hljsDefineSolidity(hljs) {
             'type ' +
             'blockhash gasleft ' +
             'assert revert require ' +
-	    'Error ' + //Not exactly a builtin? but this seems the best category for it
+            'Error ' + //Not exactly a builtin? but this seems the best category for it
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             'log0 log1 log2 log3 log4' +
             // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
             //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall ',
+            'send transfer call callcode delegatecall staticcall '
     };
 
     var SOL_ASSEMBLY_KEYWORDS = {
@@ -112,7 +112,9 @@ function hljsDefineSolidity(hljs) {
             'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
             'create create2 call callcode delegatecall staticcall ' +
             'log0 log1 log2 log3 log4 ' +
-            'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit'
+            'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit',
+        literal:
+            'true false'
     };
 
     //covers the special slot/offset notation in assembly
@@ -204,6 +206,12 @@ function hljsDefineSolidity(hljs) {
             keywords: SOL_KEYWORDS,
         });
 
+    var SOL_SPECIAL_PARAMETERS = {
+        //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
+        className: 'built_in',
+        begin: /(gas|value|salt):/
+    };
+
     function makeBuiltinProps(obj, props) {
         return {
             begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + obj + '\\.\\s*',
@@ -234,6 +242,7 @@ function hljsDefineSolidity(hljs) {
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
+            SOL_SPECIAL_PARAMETERS,
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
@@ -241,6 +250,7 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
+                    SOL_SPECIAL_PARAMETERS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE
                 ],
@@ -261,6 +271,7 @@ function hljsDefineSolidity(hljs) {
                     { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
+                    SOL_SPECIAL_PARAMETERS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE
                 ]
