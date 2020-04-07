@@ -63,7 +63,7 @@ function hljsDefineSolidity(hljs) {
 
             'function modifier event constructor fallback receive ' +
             'virtual override ' +
-            'constant anonymous indexed ' +
+            'constant immutable anonymous indexed ' +
             'storage memory calldata ' +
             'external public internal payable pure view private returns ' +
 
