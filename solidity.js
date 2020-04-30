@@ -93,8 +93,10 @@ function hljsDefineSolidity(hljs) {
     var SOL_ASSEMBLY_KEYWORDS = {
         keyword:
             'assembly ' +
-            'let ' +
+            'let function ' +
             'if switch case default for leave ' +
+            'break continue ' +
+            'u256 ' + //not in old-style assembly, but in Yul
             //NOTE: We're counting most opcodes as builtins, but the following ones we're
             //treating as keywords because they alter control flow or halt execution
             'jump jumpi ' +
@@ -112,7 +114,9 @@ function hljsDefineSolidity(hljs) {
             'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
             'create create2 call callcode delegatecall staticcall ' +
             'log0 log1 log2 log3 log4 ' +
-            'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit',
+            'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit ' +
+            //not opcodes, but builtin Yul functions
+            'datasize dataoffset datacopy',
         literal:
             'true false'
     };
