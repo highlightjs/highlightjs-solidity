@@ -96,6 +96,7 @@ function hljsDefineSolidity(hljs) {
             'let function ' +
             'if switch case default for leave ' +
             'break continue ' +
+            'u256 ' + //not in old-style assembly, but in Yul
             //NOTE: We're counting most opcodes as builtins, but the following ones we're
             //treating as keywords because they alter control flow or halt execution
             'jump jumpi ' +
