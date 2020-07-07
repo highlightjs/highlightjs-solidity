@@ -72,7 +72,7 @@ function hljsDefineSolidity(hljs) {
             'assembly',
         literal:
             'true false ' +
-            'wei szabo finney ether ' +
+            'wei gwei szabo finney ether ' +
             'seconds minutes hours days weeks years',
         built_in:
             'self ' +   // :NOTE: not a real keyword, but a convention used in storage manipulation libraries
