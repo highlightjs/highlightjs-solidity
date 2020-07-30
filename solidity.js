@@ -120,8 +120,23 @@ function hljsDefineSolidity(hljs) {
     };
 
     //covers the special slot/offset notation in assembly
-    var SOL_ASSEMBLY_MEMBERS = {
+    //(old-style, with an underscore)
+    var SOL_ASSEMBLY_MEMBERS_OLD = {
         begin: /_/,
+        end: /[^A-Za-z0-9$.]/,
+        excludeBegin: true,
+        excludeEnd: true,
+        keywords: {
+            built_in: 'slot offset'
+        },
+        relevance: 2,
+    };
+
+    //covers the special slot/offset notation in assembly
+    //(new-style, with a dot; keeping this separate as it
+    //may be expanded in the future)
+    var SOL_ASSEMBLY_MEMBERS = {
+        begin: /\./,
         end: /[^A-Za-z0-9$.]/,
         excludeBegin: true,
         excludeEnd: true,
@@ -160,6 +175,24 @@ function hljsDefineSolidity(hljs) {
         relevance: 0,
     };
 
+    var HEX_APOS_STRING_MODE = {
+        className: 'string',
+        begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
+    };
+    var HEX_QUOTE_STRING_MODE = {
+        className: 'string',
+        begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
+    };
+
+    //I've set these up exactly like hljs's builtin STRING_MODEs,
+    //except with the optional initial "unicode" text
+    var SOL_APOS_STRING_MODE = hljs.inherit(hljs.APOS_STRING_MODE, //please also update SOL_QUOTE_STRING_MODE
+        { begin: /(unicode)?'/ }
+    );
+    var SOL_QUOTE_STRING_MODE = hljs.inherit(hljs.QUOTE_STRING_MODE, //please also update SOL_APOS_STRING_MODE
+        { begin: /(unicode)?"/ }
+    );
+
     var SOL_FUNC_PARAMS = {
         className: 'params',
         begin: /\(/, end: /\)/,
@@ -169,20 +202,11 @@ function hljsDefineSolidity(hljs) {
         contains: [
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
-            hljs.APOS_STRING_MODE,
-            hljs.QUOTE_STRING_MODE,
+            SOL_APOS_STRING_MODE,
+            SOL_QUOTE_STRING_MODE,
             SOL_NUMBER,
             'self' //to account for mappings and fn variables
         ]
-    };
-
-    var HEX_APOS_STRING_MODE = {
-      className: 'string',
-      begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
-    };
-    var HEX_QUOTE_STRING_MODE = {
-      className: 'string',
-      begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
     };
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
@@ -239,8 +263,8 @@ function hljsDefineSolidity(hljs) {
         lexemes: SOL_LEXEMES_RE,
         contains: [
             // basic literal definitions
-            hljs.APOS_STRING_MODE,
-            hljs.QUOTE_STRING_MODE,
+            SOL_APOS_STRING_MODE,
+            SOL_QUOTE_STRING_MODE,
             HEX_APOS_STRING_MODE,
             HEX_QUOTE_STRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
@@ -296,8 +320,8 @@ function hljsDefineSolidity(hljs) {
                 keywords: 'import * from as',
                 contains: [
                     SOL_TITLE_MODE,
-                    hljs.APOS_STRING_MODE,
-                    hljs.QUOTE_STRING_MODE,
+                    SOL_APOS_STRING_MODE,
+                    SOL_QUOTE_STRING_MODE,
                     HEX_APOS_STRING_MODE,
                     HEX_QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
@@ -325,8 +349,8 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                    hljs.inherit(hljs.APOS_STRING_MODE, { className: 'meta-string' }),
-                    hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'meta-string' })
+                    hljs.inherit(SOL_APOS_STRING_MODE, { className: 'meta-string' }),
+                    hljs.inherit(SOL_QUOTE_STRING_MODE, { className: 'meta-string' })
                 ]
             },
             { //assembly section
@@ -341,27 +365,29 @@ function hljsDefineSolidity(hljs) {
                         keywords: SOL_ASSEMBLY_KEYWORDS,
                         lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                         contains: [
-                            hljs.APOS_STRING_MODE,
-                            hljs.QUOTE_STRING_MODE,
+                            SOL_APOS_STRING_MODE,
+                            SOL_QUOTE_STRING_MODE,
                             HEX_APOS_STRING_MODE,
                             HEX_QUOTE_STRING_MODE,
                             hljs.C_LINE_COMMENT_MODE,
                             hljs.C_BLOCK_COMMENT_MODE,
                             SOL_NUMBER,
                             SOL_ASSEMBLY_MEMBERS,
+                            SOL_ASSEMBLY_MEMBERS_OLD,
                             { //block within assembly; note the lack of endsParent
                                 begin: '{', end: '}',
                                 keywords: SOL_ASSEMBLY_KEYWORDS,
                                 lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                                 contains: [
-                                    hljs.APOS_STRING_MODE,
-                                    hljs.QUOTE_STRING_MODE,
+                                    SOL_APOS_STRING_MODE,
+                                    SOL_QUOTE_STRING_MODE,
                                     HEX_APOS_STRING_MODE,
                                     HEX_QUOTE_STRING_MODE,
                                     hljs.C_LINE_COMMENT_MODE,
                                     hljs.C_BLOCK_COMMENT_MODE,
                                     SOL_NUMBER,
                                     SOL_ASSEMBLY_MEMBERS,
+                                    SOL_ASSEMBLY_MEMBERS_OLD,
                                     'self'
                                 ]
                             }
