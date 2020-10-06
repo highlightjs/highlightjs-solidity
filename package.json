@@ -21,9 +21,9 @@
   "author": "pospi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pospi/highlightjs-solidity/issues"
+    "url": "https://github.com/highlightjs/highlightjs-solidity/issues"
   },
-  "homepage": "https://github.com/pospi/highlightjs-solidity#readme",
+  "homepage": "https://github.com/highlightjs/highlightjs-solidity#readme",
   "devDependencies": {
     "highlightjs": "^9.12.0",
     "mocha": "^6.2.1",
