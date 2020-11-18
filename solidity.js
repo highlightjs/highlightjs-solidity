@@ -141,7 +141,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'slot offset'
+            built_in: 'slot offset length'
         },
         relevance: 2,
     };
@@ -343,8 +343,8 @@ function hljsDefineSolidity(hljs) {
                 beginKeywords: 'pragma', end: ';',
                 lexemes: SOL_LEXEMES_RE,
                 keywords: {
-                    keyword: 'pragma solidity experimental',
-                    built_in: 'ABIEncoderV2 SMTChecker'
+                    keyword: 'pragma solidity experimental abicoder',
+                    built_in: 'ABIEncoderV2 SMTChecker v1 v2'
                 },
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
