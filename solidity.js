@@ -58,6 +58,7 @@ function hljsDefineSolidity(hljs) {
 
             'new delete ' +
             'if else for while continue break return throw emit try catch ' +
+            'unchecked ' +
             //NOTE: doesn't always act as a keyword, but seems fine to include
             '_ ' +
 
@@ -221,7 +222,8 @@ function hljsDefineSolidity(hljs) {
         excludeEnd: true,
         keywords: {
             built_in: 'gas value selector address length push pop ' +
-               'send transfer call callcode delegatecall staticcall balance ' +
+               'send transfer call callcode delegatecall staticcall ' +
+               'balance code codehash ' +
                'name creationCode runtimeCode interfaceId min max'
         },
         relevance: 2,
@@ -286,7 +288,7 @@ function hljsDefineSolidity(hljs) {
             },
             // built-in members
             makeBuiltinProps('msg', 'gas value data sender sig'),
-            makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit number timestamp '),
+            makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit number timestamp chainid'),
             makeBuiltinProps('tx', 'gasprice origin'),
             makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature'),
             SOL_RESERVED_MEMBERS,
