@@ -57,12 +57,12 @@ function hljsDefineSolidity(hljs) {
             'enum struct mapping address ' +
 
             'new delete ' +
-            'if else for while continue break return throw emit try catch ' +
+            'if else for while continue break return throw emit try catch revert ' +
             'unchecked ' +
             //NOTE: doesn't always act as a keyword, but seems fine to include
             '_ ' +
 
-            'function modifier event constructor fallback receive ' +
+            'function modifier event constructor fallback receive error ' +
             'virtual override ' +
             'constant immutable anonymous indexed ' +
             'storage memory calldata ' +
@@ -82,7 +82,7 @@ function hljsDefineSolidity(hljs) {
             'msg block tx abi ' +
             'type ' +
             'blockhash gasleft ' +
-            'assert revert require ' +
+            'assert require ' +
             'Error Panic ' +
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
             'log0 log1 log2 log3 log4' +
@@ -291,6 +291,7 @@ function hljsDefineSolidity(hljs) {
             makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit number timestamp chainid'),
             makeBuiltinProps('tx', 'gasprice origin'),
             makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature'),
+            makeBuiltinProps('bytes', 'concat'),
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
