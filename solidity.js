@@ -178,20 +178,20 @@ function hljsDefineSolidity(hljs) {
 
     var HEX_APOS_STRING_MODE = {
         className: 'string',
-        begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
+        begin: /\bhex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
     };
     var HEX_QUOTE_STRING_MODE = {
         className: 'string',
-        begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
+        begin: /\bhex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
     };
 
     //I've set these up exactly like hljs's builtin STRING_MODEs,
     //except with the optional initial "unicode" text
     var SOL_APOS_STRING_MODE = hljs.inherit(hljs.APOS_STRING_MODE, //please also update SOL_QUOTE_STRING_MODE
-        { begin: /(unicode)?'/ }
+        { begin: /\b(unicode)?'/ }
     );
     var SOL_QUOTE_STRING_MODE = hljs.inherit(hljs.QUOTE_STRING_MODE, //please also update SOL_APOS_STRING_MODE
-        { begin: /(unicode)?"/ }
+        { begin: /\b(unicode)?"/ }
     );
 
     var SOL_FUNC_PARAMS = {
@@ -236,10 +236,12 @@ function hljsDefineSolidity(hljs) {
             keywords: SOL_KEYWORDS,
         });
 
+    //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
+    var SOL_SPECIAL_PARAMETERS_LIST = ['gas', 'value', 'salt'];
+    var SOL_SPECIAL_PARAMETERS_PARTIAL_RE = '(' + SOL_SPECIAL_PARAMETERS_LIST.join('|') + '):';
     var SOL_SPECIAL_PARAMETERS = {
-        //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
         className: 'built_in',
-        begin: /(gas|value|salt):/
+        begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + SOL_SPECIAL_PARAMETERS_PARTIAL_RE
     };
 
     function makeBuiltinProps(obj, props) {
