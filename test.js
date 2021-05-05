@@ -1,7 +1,7 @@
 const assert = require('assert');
 const parse5 = require('parse5');
 
-const hljs = require('highlightjs');
+const hljs = require('highlight.js');
 const defineSolidity = require('.');
 
 defineSolidity(hljs);
