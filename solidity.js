@@ -276,7 +276,7 @@ function hljsDefineSolidity(hljs) {
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
-                beginKeywords: 'function modifier event constructor', end: /[{;]/, excludeEnd: true,
+                beginKeywords: 'function modifier event constructor fallback receive error', end: /[{;]/, excludeEnd: true,
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
