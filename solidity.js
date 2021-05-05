@@ -49,6 +49,7 @@ function hljsDefineSolidity(hljs) {
     var ufixedTypesString = ufixedTypes.join(' ') + ' ';
 
     var SOL_KEYWORDS = {
+        $pattern: SOL_LEXEMES_RE,
         keyword:
             'var bool string ' +
             'int uint ' + intTypesString + uintTypesString +
@@ -92,6 +93,7 @@ function hljsDefineSolidity(hljs) {
     };
 
     var SOL_ASSEMBLY_KEYWORDS = {
+        $pattern: SOL_ASSEMBLY_LEXEMES_RE,
         keyword:
             'assembly ' +
             'let function ' +
@@ -128,6 +130,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
+            $pattern: SOL_ASSEMBLY_LEXEMES_RE,
             built_in: 'slot offset'
         },
         relevance: 2,
@@ -142,6 +145,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
+            $pattern: SOL_ASSEMBLY_LEXEMES_RE,
             built_in: 'slot offset length'
         },
         relevance: 2,
@@ -221,6 +225,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
+            $pattern: SOL_LEXEMES_RE,
             built_in: 'gas value selector address length push pop ' +
                'send transfer call callcode delegatecall staticcall ' +
                'balance code codehash ' +
@@ -232,7 +237,6 @@ function hljsDefineSolidity(hljs) {
     var SOL_TITLE_MODE =
         hljs.inherit(hljs.TITLE_MODE, {
             begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
-            lexemes: SOL_LEXEMES_RE,
             keywords: SOL_KEYWORDS,
         });
 
@@ -248,9 +252,9 @@ function hljsDefineSolidity(hljs) {
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
-            lexemes: SOL_LEXEMES_RE,
             keywords: {
-                built_in: obj + ' ' + props,
+                $pattern: SOL_LEXEMES_RE,
+                built_in: obj + ' ' + props
             },
             contains: [
                 SOL_RESERVED_MEMBERS
@@ -262,7 +266,6 @@ function hljsDefineSolidity(hljs) {
     return {
         aliases: ['sol'],
         keywords: SOL_KEYWORDS,
-        lexemes: SOL_LEXEMES_RE,
         contains: [
             // basic literal definitions
             SOL_APOS_STRING_MODE,
@@ -275,7 +278,6 @@ function hljsDefineSolidity(hljs) {
             SOL_SPECIAL_PARAMETERS,
             { // functions
                 className: 'function',
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'function modifier event constructor', end: /[{;]/, excludeEnd: true,
                 contains: [
                     SOL_TITLE_MODE,
@@ -295,11 +297,10 @@ function hljsDefineSolidity(hljs) {
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'contract interface library', end: '{', excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
-                    { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
+                    { beginKeywords: 'is' },
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     SOL_SPECIAL_PARAMETERS,
@@ -308,7 +309,6 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // structs & enums
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'struct enum', end: '{', excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
@@ -319,8 +319,10 @@ function hljsDefineSolidity(hljs) {
             },
             { // imports
                 beginKeywords: 'import', end: ';',
-                lexemes: SOL_LEXEMES_RE,
-                keywords: 'import * from as',
+                keywords: {
+                    $pattern: SOL_LEXEMES_RE,
+                    keyword: 'import * from as'
+                },
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_APOS_STRING_MODE,
@@ -333,8 +335,10 @@ function hljsDefineSolidity(hljs) {
             },
             { // using
                 beginKeywords: 'using', end: ';',
-                lexemes: SOL_LEXEMES_RE,
-                keywords: 'using * for',
+                keywords: {
+                    $pattern: SOL_LEXEMES_RE,
+                    keyword: 'using * for'
+                },
                 contains: [
                     SOL_TITLE_MODE,
                     hljs.C_LINE_COMMENT_MODE,
@@ -344,8 +348,8 @@ function hljsDefineSolidity(hljs) {
             { // pragmas
                 className: 'meta',
                 beginKeywords: 'pragma', end: ';',
-                lexemes: SOL_LEXEMES_RE,
                 keywords: {
+                    $pattern: SOL_LEXEMES_RE,
                     keyword: 'pragma solidity experimental abicoder',
                     built_in: 'ABIEncoderV2 SMTChecker v1 v2'
                 },
@@ -366,7 +370,6 @@ function hljsDefineSolidity(hljs) {
                         begin: '{', end: '}',
                         endsParent: true,
                         keywords: SOL_ASSEMBLY_KEYWORDS,
-                        lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                         contains: [
                             SOL_APOS_STRING_MODE,
                             SOL_QUOTE_STRING_MODE,
@@ -380,7 +383,6 @@ function hljsDefineSolidity(hljs) {
                             { //block within assembly; note the lack of endsParent
                                 begin: '{', end: '}',
                                 keywords: SOL_ASSEMBLY_KEYWORDS,
-                                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
                                 contains: [
                                     SOL_APOS_STRING_MODE,
                                     SOL_QUOTE_STRING_MODE,
