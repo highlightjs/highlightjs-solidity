@@ -10,7 +10,147 @@
 
 var module = module ? module : {};     // shim for browser use
 
+function isNegativeLookbehindAvailable() {
+    try {
+        new RegExp('(?<!.)');
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+//like a C number, except:
+//1. no octal literals (leading zeroes disallowed)
+//2. underscores (1 apiece) are allowed between consecutive digits
+//(including hex digits)
+//also, all instances of \b (word boundary) have been replaced with (?<!\$)\b
+//NOTE: we use string rather than regexp in the case where negative lookbehind
+//is allowed to avoid Firefox parse errors; sorry about the resulting double backslashes!
+if (isNegativeLookbehindAvailable()) {
+    var SOL_NUMBER_RE = '-?((?<!\\$)\\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<!\\$)\\b[1-9](_?\\d)*(\\.((\\d_?)*\\d)?)?|\\.\\d(_?\\d)*)([eE][-+]?\\d(_?\\d)*)?|(?<!\\$)\\b0)';
+} else {
+    var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|\b0)/;
+}
+
+var SOL_NUMBER = {
+    className: 'number',
+    begin: SOL_NUMBER_RE,
+    relevance: 0,
+};
+
+var SOL_ASSEMBLY_KEYWORDS = {
+    keyword:
+        'assembly ' +
+        'let function ' +
+        'if switch case default for leave ' +
+        'break continue ' +
+        'u256 ' + //not in old-style assembly, but in Yul
+        //NOTE: We're counting most opcodes as builtins, but the following ones we're
+        //treating as keywords because they alter control flow or halt execution
+        'jump jumpi ' +
+        'stop return revert selfdestruct invalid',
+    built_in:
+        //NOTE that push1 through push32, as well as jumpdest, are not included
+        'add sub mul div sdiv mod smod exp not lt gt slt sgt eq iszero ' +
+        'and or xor byte shl shr sar ' +
+        'addmod mulmod signextend keccak256 ' +
+        'pc pop ' +
+        'dup1 dup2 dup3 dup4 dup5 dup6 dup7 dup8 dup9 dup10 dup11 dup12 dup13 dup14 dup15 dup16 ' +
+        'swap1 swap2 swap3 swap4 swap5 swap6 swap7 swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15 swap16 ' +
+        'mload mstore mstore8 sload sstore msize ' +
+        'gas address balance selfbalance caller callvalue ' +
+        'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
+        'create create2 call callcode delegatecall staticcall ' +
+        'log0 log1 log2 log3 log4 ' +
+        'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit',
+    literal:
+        'true false'
+};
+
+var HEX_APOS_STRING_MODE = {
+    className: 'string',
+    begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
+};
+
+var HEX_QUOTE_STRING_MODE = {
+    className: 'string',
+    begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
+};
+
+//I've set these up exactly like hljs's builtin STRING_MODEs,
+//except with the optional initial "unicode" text
+function solAposStringMode(hljs) {
+    return hljs.inherit(
+        hljs.APOS_STRING_MODE, //please also update solQuoteStringMode
+        { begin: /(unicode)?'/ }
+    );
+}
+
+function solQuoteStringMode(hljs) {
+    return hljs.inherit(
+        hljs.QUOTE_STRING_MODE, //please also update solAposStringMode
+        { begin: /(unicode)?"/ }
+    );
+}
+
+//covers the special slot/offset notation in assembly
+//(old-style, with an underscore)
+var SOL_ASSEMBLY_MEMBERS_OLD = {
+    begin: /_/,
+    end: /[^A-Za-z0-9$.]/,
+    excludeBegin: true,
+    excludeEnd: true,
+    keywords: {
+        built_in: 'slot offset'
+    },
+    relevance: 2,
+};
+
+//covers the special slot/offset notation in assembly
+//(new-style, with a dot; keeping this separate as it
+//may be expanded in the future)
+var SOL_ASSEMBLY_MEMBERS = {
+    begin: /\./,
+    end: /[^A-Za-z0-9$.]/,
+    excludeBegin: true,
+    excludeEnd: true,
+    keywords: {
+        built_in: 'slot offset length'
+    },
+    relevance: 2,
+};
+
+//in assembly, identifiers can contain periods (but may not start with them)
+var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
+
+function baseAssembly(hljs) {
+    //this function defines a "basic" assembly environment;
+    //we use it several times below with hljs.inherit to provide
+    //elaborations upon this basic assembly environment
+    var SOL_APOS_STRING_MODE = solAposStringMode(hljs);
+    var SOL_QUOTE_STRING_MODE = solQuoteStringMode(hljs);
+
+    return {
+        keywords: SOL_ASSEMBLY_KEYWORDS,
+        lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+        contains: [
+            SOL_APOS_STRING_MODE,
+            SOL_QUOTE_STRING_MODE,
+            HEX_APOS_STRING_MODE,
+            HEX_QUOTE_STRING_MODE,
+            hljs.C_LINE_COMMENT_MODE,
+            hljs.C_BLOCK_COMMENT_MODE,
+            SOL_NUMBER,
+            SOL_ASSEMBLY_MEMBERS,
+            SOL_ASSEMBLY_MEMBERS_OLD
+        ]
+    };
+}
+
 function hljsDefineSolidity(hljs) {
+
+    var SOL_APOS_STRING_MODE = solAposStringMode(hljs);
+    var SOL_QUOTE_STRING_MODE = solQuoteStringMode(hljs);
 
     //first: let's set up all parameterized types (bytes, int, uint, fixed, ufixed)
     //NOTE: unparameterized versions are *not* included here, those are included
@@ -91,109 +231,6 @@ function hljsDefineSolidity(hljs) {
             'send transfer call callcode delegatecall staticcall '
     };
 
-    var SOL_ASSEMBLY_KEYWORDS = {
-        keyword:
-            'assembly ' +
-            'let function ' +
-            'if switch case default for leave ' +
-            'break continue ' +
-            'u256 ' + //not in old-style assembly, but in Yul
-            //NOTE: We're counting most opcodes as builtins, but the following ones we're
-            //treating as keywords because they alter control flow or halt execution
-            'jump jumpi ' +
-            'stop return revert selfdestruct invalid',
-        built_in:
-            //NOTE that push1 through push32, as well as jumpdest, are not included
-            'add sub mul div sdiv mod smod exp not lt gt slt sgt eq iszero ' +
-            'and or xor byte shl shr sar ' +
-            'addmod mulmod signextend keccak256 ' +
-            'pc pop ' +
-            'dup1 dup2 dup3 dup4 dup5 dup6 dup7 dup8 dup9 dup10 dup11 dup12 dup13 dup14 dup15 dup16 ' +
-            'swap1 swap2 swap3 swap4 swap5 swap6 swap7 swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15 swap16 ' +
-            'mload mstore mstore8 sload sstore msize ' +
-            'gas address balance selfbalance caller callvalue ' +
-            'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
-            'create create2 call callcode delegatecall staticcall ' +
-            'log0 log1 log2 log3 log4 ' +
-            'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit',
-        literal:
-            'true false'
-    };
-
-    //covers the special slot/offset notation in assembly
-    //(old-style, with an underscore)
-    var SOL_ASSEMBLY_MEMBERS_OLD = {
-        begin: /_/,
-        end: /[^A-Za-z0-9$.]/,
-        excludeBegin: true,
-        excludeEnd: true,
-        keywords: {
-            built_in: 'slot offset'
-        },
-        relevance: 2,
-    };
-
-    //covers the special slot/offset notation in assembly
-    //(new-style, with a dot; keeping this separate as it
-    //may be expanded in the future)
-    var SOL_ASSEMBLY_MEMBERS = {
-        begin: /\./,
-        end: /[^A-Za-z0-9$.]/,
-        excludeBegin: true,
-        excludeEnd: true,
-        keywords: {
-            built_in: 'slot offset length'
-        },
-        relevance: 2,
-    };
-
-    function isNegativeLookbehindAvailable() {
-        try {
-            new RegExp('(?<!.)');
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-
-    //like a C number, except:
-    //1. no octal literals (leading zeroes disallowed)
-    //2. underscores (1 apiece) are allowed between consecutive digits
-    //(including hex digits)
-    //also, all instances of \b (word boundary) have been replaced with (?<!\$)\b
-    //NOTE: we use string rather than regexp in the case where negative lookbehind
-    //is allowed to avoid Firefox parse errors; sorry about the resulting double backslashes!
-    if (isNegativeLookbehindAvailable()) {
-        var SOL_NUMBER_RE = '-?((?<!\\$)\\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<!\\$)\\b[1-9](_?\\d)*(\\.((\\d_?)*\\d)?)?|\\.\\d(_?\\d)*)([eE][-+]?\\d(_?\\d)*)?|(?<!\\$)\\b0)';
-    } else {
-        var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|\b0)/;
-    }
-
-
-    var SOL_NUMBER = {
-        className: 'number',
-        begin: SOL_NUMBER_RE,
-        relevance: 0,
-    };
-
-    var HEX_APOS_STRING_MODE = {
-        className: 'string',
-        begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
-    };
-    var HEX_QUOTE_STRING_MODE = {
-        className: 'string',
-        begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
-    };
-
-    //I've set these up exactly like hljs's builtin STRING_MODEs,
-    //except with the optional initial "unicode" text
-    var SOL_APOS_STRING_MODE = hljs.inherit(hljs.APOS_STRING_MODE, //please also update SOL_QUOTE_STRING_MODE
-        { begin: /(unicode)?'/ }
-    );
-    var SOL_QUOTE_STRING_MODE = hljs.inherit(hljs.QUOTE_STRING_MODE, //please also update SOL_APOS_STRING_MODE
-        { begin: /(unicode)?"/ }
-    );
-
     var SOL_FUNC_PARAMS = {
         className: 'params',
         begin: /\(/, end: /\)/,
@@ -212,8 +249,6 @@ function hljsDefineSolidity(hljs) {
 
     //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
     var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
-    //in assembly, identifiers can contain periods (but may not start with them)
-    var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
 
     var SOL_RESERVED_MEMBERS = {
         begin: /\.\s*/,  // match any property access up to start of prop
@@ -258,6 +293,8 @@ function hljsDefineSolidity(hljs) {
             relevance: 10,
         };
     }
+
+    var BASE_ASSEMBLY_ENVIRONMENT = baseAssembly(hljs);
 
     return {
         aliases: ['sol'],
@@ -362,40 +399,16 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                    { //the actual *block* in the assembly section
+                    hljs.inherit(BASE_ASSEMBLY_ENVIRONMENT, { //the actual *block* in the assembly section
                         begin: '{', end: '}',
                         endsParent: true,
-                        keywords: SOL_ASSEMBLY_KEYWORDS,
-                        lexemes: SOL_ASSEMBLY_LEXEMES_RE,
-                        contains: [
-                            SOL_APOS_STRING_MODE,
-                            SOL_QUOTE_STRING_MODE,
-                            HEX_APOS_STRING_MODE,
-                            HEX_QUOTE_STRING_MODE,
-                            hljs.C_LINE_COMMENT_MODE,
-                            hljs.C_BLOCK_COMMENT_MODE,
-                            SOL_NUMBER,
-                            SOL_ASSEMBLY_MEMBERS,
-                            SOL_ASSEMBLY_MEMBERS_OLD,
-                            { //block within assembly; note the lack of endsParent
+                        contains: BASE_ASSEMBLY_ENVIRONMENT.contains.concat([
+                            hljs.inherit(BASE_ASSEMBLY_ENVIRONMENT, { //block within assembly
                                 begin: '{', end: '}',
-                                keywords: SOL_ASSEMBLY_KEYWORDS,
-                                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
-                                contains: [
-                                    SOL_APOS_STRING_MODE,
-                                    SOL_QUOTE_STRING_MODE,
-                                    HEX_APOS_STRING_MODE,
-                                    HEX_QUOTE_STRING_MODE,
-                                    hljs.C_LINE_COMMENT_MODE,
-                                    hljs.C_BLOCK_COMMENT_MODE,
-                                    SOL_NUMBER,
-                                    SOL_ASSEMBLY_MEMBERS,
-                                    SOL_ASSEMBLY_MEMBERS_OLD,
-                                    'self'
-                                ]
-                            }
-                        ]
-                    }
+                                contains: BASE_ASSEMBLY_ENVIRONMENT.contains.concat(['self'])
+                            })
+                        ])
+                    })
                 ]
             }
         ],
@@ -403,8 +416,27 @@ function hljsDefineSolidity(hljs) {
     };
 }
 
+function hljsDefineYul(hljs) {
+
+    var YUL_KEYWORDS = {
+        keyword: SOL_ASSEMBLY_KEYWORDS.keyword + ' ' +
+            'object code data',
+        built_in: SOL_ASSEMBLY_KEYWORDS.built_in + ' ' +
+            'datasize dataoffset datacopy ' +
+            'setimmutable loadimmutable ' +
+            'linkersymbol memoryguard',
+        literal: SOL_ASSEMBLY_KEYWORDS.literal
+    };
+
+    return hljs.inherit(
+        baseAssembly(hljs),
+        { keywords: YUL_KEYWORDS }
+    );
+}
+
 module.exports = function(hljs) {
     hljs.registerLanguage('solidity', hljsDefineSolidity);
+    hljs.registerLanguage('yul', hljsDefineYul);
 };
 
 module.exports.definer = hljsDefineSolidity;
