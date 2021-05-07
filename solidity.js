@@ -93,33 +93,6 @@ function solQuoteStringMode(hljs) {
     );
 }
 
-//covers the special slot/offset notation in assembly
-//(old-style, with an underscore)
-var SOL_ASSEMBLY_MEMBERS_OLD = {
-    begin: /_/,
-    end: /[^A-Za-z0-9$.]/,
-    excludeBegin: true,
-    excludeEnd: true,
-    keywords: {
-        built_in: 'slot offset'
-    },
-    relevance: 2,
-};
-
-//covers the special slot/offset notation in assembly
-//(new-style, with a dot; keeping this separate as it
-//may be expanded in the future)
-var SOL_ASSEMBLY_MEMBERS = {
-    begin: /\./,
-    end: /[^A-Za-z0-9$.]/,
-    excludeBegin: true,
-    excludeEnd: true,
-    keywords: {
-        built_in: 'slot offset length'
-    },
-    relevance: 2,
-};
-
 //in assembly, identifiers can contain periods (but may not start with them)
 var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
 
@@ -140,9 +113,7 @@ function baseAssembly(hljs) {
             HEX_QUOTE_STRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
-            SOL_NUMBER,
-            SOL_ASSEMBLY_MEMBERS,
-            SOL_ASSEMBLY_MEMBERS_OLD
+            SOL_NUMBER
         ]
     };
 }
@@ -294,7 +265,40 @@ function hljsDefineSolidity(hljs) {
         };
     }
 
+    //covers the special slot/offset notation in assembly
+    //(old-style, with an underscore)
+    var SOL_ASSEMBLY_MEMBERS_OLD = {
+        begin: /_/,
+        end: /[^A-Za-z0-9$.]/,
+        excludeBegin: true,
+        excludeEnd: true,
+        keywords: {
+            built_in: 'slot offset'
+        },
+        relevance: 2,
+    };
+
+    //covers the special slot/offset notation in assembly
+    //(new-style, with a dot; keeping this separate as it
+    //may be expanded in the future)
+    var SOL_ASSEMBLY_MEMBERS = {
+        begin: /\./,
+        end: /[^A-Za-z0-9$.]/,
+        excludeBegin: true,
+        excludeEnd: true,
+        keywords: {
+            built_in: 'slot offset length'
+        },
+        relevance: 2,
+    };
+
     var BASE_ASSEMBLY_ENVIRONMENT = baseAssembly(hljs);
+    var SOL_ASSEMBLY_ENVIRONMENT = hljs.inherit(BASE_ASSEMBLY_ENVIRONMENT, {
+        contains: BASE_ASSEMBLY_ENVIRONMENT.contains.concat([
+            SOL_ASSEMBLY_MEMBERS,
+            SOL_ASSEMBLY_MEMBERS_OLD
+        ])
+    });
 
     return {
         aliases: ['sol'],
@@ -399,13 +403,13 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                    hljs.inherit(BASE_ASSEMBLY_ENVIRONMENT, { //the actual *block* in the assembly section
+                    hljs.inherit(SOL_ASSEMBLY_ENVIRONMENT, { //the actual *block* in the assembly section
                         begin: '{', end: '}',
                         endsParent: true,
-                        contains: BASE_ASSEMBLY_ENVIRONMENT.contains.concat([
-                            hljs.inherit(BASE_ASSEMBLY_ENVIRONMENT, { //block within assembly
+                        contains: SOL_ASSEMBLY_ENVIRONMENT.contains.concat([
+                            hljs.inherit(SOL_ASSEMBLY_ENVIRONMENT, { //block within assembly
                                 begin: '{', end: '}',
-                                contains: BASE_ASSEMBLY_ENVIRONMENT.contains.concat(['self'])
+                                contains: SOL_ASSEMBLY_ENVIRONMENT.contains.concat(['self'])
                             })
                         ])
                     })
