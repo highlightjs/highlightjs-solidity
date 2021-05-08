@@ -242,10 +242,12 @@ function hljsDefineSolidity(hljs) {
             keywords: SOL_KEYWORDS,
         });
 
+    //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
+    var SOL_SPECIAL_PARAMETERS_LIST = ['gas', 'value', 'salt'];
+    var SOL_SPECIAL_PARAMETERS_PARTIAL_RE = '(' + SOL_SPECIAL_PARAMETERS_LIST.join('|') + '):';
     var SOL_SPECIAL_PARAMETERS = {
-        //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
         className: 'built_in',
-        begin: /(gas|value|salt):/
+        begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + SOL_SPECIAL_PARAMETERS_PARTIAL_RE
     };
 
     function makeBuiltinProps(obj, props) {
@@ -317,7 +319,7 @@ function hljsDefineSolidity(hljs) {
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
-                beginKeywords: 'function modifier event constructor', end: /[{;]/, excludeEnd: true,
+                beginKeywords: 'function modifier event constructor fallback receive error', end: /[{;]/, excludeEnd: true,
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
