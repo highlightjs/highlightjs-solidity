@@ -93,15 +93,38 @@ function solQuoteStringMode(hljs) {
     );
 }
 
-//in assembly, identifiers can contain periods (but may not start with them)
-var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
-
 function baseAssembly(hljs) {
     //this function defines a "basic" assembly environment;
     //we use it several times below with hljs.inherit to provide
     //elaborations upon this basic assembly environment
     var SOL_APOS_STRING_MODE = solAposStringMode(hljs);
     var SOL_QUOTE_STRING_MODE = solQuoteStringMode(hljs);
+
+    //in assembly, identifiers can contain periods (but may not start with them)
+    var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
+
+    var SOL_ASSEMBLY_TITLE_MODE =
+        hljs.inherit(hljs.TITLE_MODE, {
+            begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
+            lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+            keywords: SOL_ASSEMBLY_KEYWORDS
+        });
+
+    var SOL_ASSEMBLY_FUNC_PARAMS = {
+        className: 'params',
+        begin: /\(/, end: /\)/,
+        excludeBegin: true,
+        excludeEnd: true,
+        lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+        keywords: SOL_ASSEMBLY_KEYWORDS,
+        contains: [
+            hljs.C_LINE_COMMENT_MODE,
+            hljs.C_BLOCK_COMMENT_MODE,
+            SOL_APOS_STRING_MODE,
+            SOL_QUOTE_STRING_MODE,
+            SOL_NUMBER
+        ]
+    };
 
     return {
         keywords: SOL_ASSEMBLY_KEYWORDS,
@@ -113,7 +136,18 @@ function baseAssembly(hljs) {
             HEX_QUOTE_STRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
-            SOL_NUMBER
+            SOL_NUMBER,
+            { // functions
+                className: 'function',
+                lexemes: SOL_ASSEMBLY_LEXEMES_RE,
+                beginKeywords: 'function', end: '{', excludeEnd: true,
+                contains: [
+                    SOL_ASSEMBLY_TITLE_MODE,
+                    SOL_ASSEMBLY_FUNC_PARAMS,
+                    hljs.C_LINE_COMMENT_MODE,
+                    hljs.C_BLOCK_COMMENT_MODE
+                ],
+            },
         ]
     };
 }
@@ -202,11 +236,15 @@ function hljsDefineSolidity(hljs) {
             'send transfer call callcode delegatecall staticcall '
     };
 
+    //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
+    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
+
     var SOL_FUNC_PARAMS = {
         className: 'params',
         begin: /\(/, end: /\)/,
         excludeBegin: true,
         excludeEnd: true,
+        lexemes: SOL_LEXEMES_RE,
         keywords: SOL_KEYWORDS,
         contains: [
             hljs.C_LINE_COMMENT_MODE,
@@ -217,9 +255,6 @@ function hljsDefineSolidity(hljs) {
             'self' //to account for mappings and fn variables
         ]
     };
-
-    //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
-    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
 
     var SOL_RESERVED_MEMBERS = {
         begin: /\.\s*/,  // match any property access up to start of prop
@@ -239,7 +274,7 @@ function hljsDefineSolidity(hljs) {
         hljs.inherit(hljs.TITLE_MODE, {
             begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
             lexemes: SOL_LEXEMES_RE,
-            keywords: SOL_KEYWORDS,
+            keywords: SOL_KEYWORDS
         });
 
     //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
