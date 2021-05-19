@@ -69,12 +69,12 @@ var SOL_ASSEMBLY_KEYWORDS = {
 
 var HEX_APOS_STRING_MODE = {
     className: 'string',
-    begin: /hex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
+    begin: /\bhex'(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?'/, //please also update HEX_QUOTE_STRING_MODE
 };
 
 var HEX_QUOTE_STRING_MODE = {
     className: 'string',
-    begin: /hex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
+    begin: /\bhex"(([0-9a-fA-F]{2}_?)*[0-9a-fA-F]{2})?"/, //please also update HEX_APOS_STRING_MODE
 };
 
 //I've set these up exactly like hljs's builtin STRING_MODEs,
@@ -82,14 +82,14 @@ var HEX_QUOTE_STRING_MODE = {
 function solAposStringMode(hljs) {
     return hljs.inherit(
         hljs.APOS_STRING_MODE, //please also update solQuoteStringMode
-        { begin: /(unicode)?'/ }
+        { begin: /(\bunicode)?'/ }
     );
 }
 
 function solQuoteStringMode(hljs) {
     return hljs.inherit(
         hljs.QUOTE_STRING_MODE, //please also update solAposStringMode
-        { begin: /(unicode)?"/ }
+        { begin: /(\bunicode)?"/ }
     );
 }
 
