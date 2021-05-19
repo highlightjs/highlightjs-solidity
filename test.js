@@ -8,8 +8,8 @@ defineSolidity(hljs);
 
 // Receives a Solidity snippet and returns an array of [type, text] tuples.
 // Type is the detected token type, and text the corresponding source text.
-function getTokens(source) {
-  const { value } = hljs.highlight('solidity', source);
+function getTokens(source, language = 'solidity') {
+  const { value } = hljs.highlight(language, source);
   const frag = parse5.parseFragment(value);
 
   return frag.childNodes.map(function (node) {
@@ -82,5 +82,13 @@ it('builtins', function () {
 
   for (const b of builtins) {
     assert.deepEqual(getTokens(b), [['built_in', b]]);
+  }
+});
+
+it('yul keywords', function () {
+  const keywords = ['object', 'code', 'data'];
+
+  for (const keyword of keywords) {
+    assert.deepEqual(getTokens(keyword, 'yul'), [['keyword', keyword]]);
   }
 });
