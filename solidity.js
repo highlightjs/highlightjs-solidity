@@ -26,10 +26,9 @@ function isNegativeLookbehindAvailable() {
 //also, all instances of \b (word boundary) have been replaced with (?<!\$)\b
 //NOTE: we use string rather than regexp in the case where negative lookbehind
 //is allowed to avoid Firefox parse errors; sorry about the resulting double backslashes!
+var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|\b0)/;
 if (isNegativeLookbehindAvailable()) {
-    var SOL_NUMBER_RE = '-?((?<!\\$)\\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|((?<!\\$)\\b[1-9](_?\\d)*(\\.((\\d_?)*\\d)?)?|\\.\\d(_?\\d)*)([eE][-+]?\\d(_?\\d)*)?|(?<!\\$)\\b0)';
-} else {
-    var SOL_NUMBER_RE = /-?(\b0[xX]([a-fA-F0-9]_?)*[a-fA-F0-9]|(\b[1-9](_?\d)*(\.((\d_?)*\d)?)?|\.\d(_?\d)*)([eE][-+]?\d(_?\d)*)?|\b0)/;
+    SOL_NUMBER_RE = SOL_NUMBER_RE.source.replace(/\\b/g, '(?<!\\$)\\b');
 }
 
 var SOL_NUMBER = {
