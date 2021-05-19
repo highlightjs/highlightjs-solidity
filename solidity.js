@@ -238,7 +238,7 @@ function hljsDefineSolidity(hljs) {
 
     //special parameters (note: these aren't really handled properly, but this seems like the best compromise for now)
     var SOL_SPECIAL_PARAMETERS_LIST = ['gas', 'value', 'salt'];
-    var SOL_SPECIAL_PARAMETERS_PARTIAL_RE = '(' + SOL_SPECIAL_PARAMETERS_LIST.join('|') + '):';
+    var SOL_SPECIAL_PARAMETERS_PARTIAL_RE = '(' + SOL_SPECIAL_PARAMETERS_LIST.join('|') + ')(?=:)';
     var SOL_SPECIAL_PARAMETERS = {
         className: 'built_in',
         begin: (isNegativeLookbehindAvailable() ? '(?<!\\$)\\b' : '\\b') + SOL_SPECIAL_PARAMETERS_PARTIAL_RE
