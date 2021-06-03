@@ -92,3 +92,11 @@ it('yul keywords', function () {
     assert.deepEqual(getTokens(keyword, 'yul'), [['keyword', keyword]]);
   }
 });
+
+it('yul operators', function () {
+  const operators = ['->', ':='];
+
+  for (const operator of operators) {
+    assert.deepEqual(getTokens(operator, 'yul'), [['operator', operator]]);
+  }
+});
