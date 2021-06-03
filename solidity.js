@@ -125,6 +125,16 @@ function baseAssembly(hljs) {
         ]
     };
 
+    var SOL_ASSEMBLY_OPERATORS = {
+        className: 'operator',
+        begin: /:=|->/
+    };
+
+    var SOL_ASSEMBLY_PUNCTUATION = {
+        className: 'punctuation',
+        begin: /[{}().,]/
+    };
+
     return {
         keywords: SOL_ASSEMBLY_KEYWORDS,
         lexemes: SOL_ASSEMBLY_LEXEMES_RE,
@@ -136,6 +146,8 @@ function baseAssembly(hljs) {
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
+            SOL_ASSEMBLY_OPERATORS,
+            SOL_ASSEMBLY_PUNCTUATION,
             { // functions
                 className: 'function',
                 lexemes: SOL_ASSEMBLY_LEXEMES_RE,
@@ -144,9 +156,11 @@ function baseAssembly(hljs) {
                     SOL_ASSEMBLY_TITLE_MODE,
                     SOL_ASSEMBLY_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE
+                    hljs.C_BLOCK_COMMENT_MODE,
+                    SOL_ASSEMBLY_OPERATORS,
+                    SOL_ASSEMBLY_PUNCTUATION
                 ],
-            },
+            }
         ]
     };
 }
@@ -235,8 +249,17 @@ function hljsDefineSolidity(hljs) {
             'send transfer call callcode delegatecall staticcall '
     };
 
-    //NOTE: including "*" as a "lexeme" because we use it as a "keyword" below
-    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*|\*/;
+    var SOL_OPERATORS = {
+        className: 'operator',
+        begin: /[+\-!~*\/%<>&^|=]/ //excluding ?: because having : as operator causes problems
+    };
+
+    var SOL_PUNCTUATION = {
+        className: 'punctuation',
+        begin: /[{}()\[\].,?:;]/ //including ?: as punctuation because having : as operator causes problems
+    };
+
+    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*/;
 
     var SOL_FUNC_PARAMS = {
         className: 'params',
@@ -350,6 +373,8 @@ function hljsDefineSolidity(hljs) {
             hljs.C_BLOCK_COMMENT_MODE,
             SOL_NUMBER,
             SOL_SPECIAL_PARAMETERS,
+            SOL_OPERATORS,
+            SOL_PUNCTUATION,
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
@@ -397,7 +422,7 @@ function hljsDefineSolidity(hljs) {
             { // imports
                 beginKeywords: 'import', end: ';',
                 lexemes: SOL_LEXEMES_RE,
-                keywords: 'import * from as',
+                keywords: 'import from as',
                 contains: [
                     SOL_TITLE_MODE,
                     SOL_APOS_STRING_MODE,
@@ -405,15 +430,17 @@ function hljsDefineSolidity(hljs) {
                     HEX_APOS_STRING_MODE,
                     HEX_QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE
+                    hljs.C_BLOCK_COMMENT_MODE,
+                    SOL_OPERATORS
                 ]
             },
             { // using
                 beginKeywords: 'using', end: ';',
                 lexemes: SOL_LEXEMES_RE,
-                keywords: 'using * for',
+                keywords: 'using for',
                 contains: [
                     SOL_TITLE_MODE,
+                    SOL_OPERATORS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE
                 ]
