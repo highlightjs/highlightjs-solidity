@@ -125,6 +125,8 @@ function baseAssembly(hljs) {
         ]
     };
 
+    //note: we always put operators below comments so
+    //it won't interfere with comments
     var SOL_ASSEMBLY_OPERATORS = {
         className: 'operator',
         begin: /:=|->/
@@ -249,6 +251,8 @@ function hljsDefineSolidity(hljs) {
             'send transfer call callcode delegatecall staticcall '
     };
 
+    //note: we always put operators below comments so
+    //it won't interfere with comments
     var SOL_OPERATORS = {
         className: 'operator',
         begin: /[+\-!~*\/%<>&^|=]/ //excluding ?: because having : as operator causes problems
@@ -440,9 +444,9 @@ function hljsDefineSolidity(hljs) {
                 keywords: 'using for',
                 contains: [
                     SOL_TITLE_MODE,
-                    SOL_OPERATORS,
                     hljs.C_LINE_COMMENT_MODE,
-                    hljs.C_BLOCK_COMMENT_MODE
+                    hljs.C_BLOCK_COMMENT_MODE,
+                    SOL_OPERATORS
                 ]
             },
             { // pragmas
