@@ -102,6 +102,19 @@ function baseAssembly(hljs) {
     //in assembly, identifiers can contain periods (but may not start with them)
     var SOL_ASSEMBLY_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9.]*/;
 
+    var SOL_ASSEMBLY_VERBATIM_RE = /\bverbatim_[1-9]?[0-9]i_[1-9]?[0-9]o\b(?!\$)/;
+    if (isNegativeLookbehindAvailable()) {
+        //replace just first \b
+        SOL_ASSEMBLY_VERBATIM_RE = SOL_ASSEMBLY_VERBATIM_RE.source.replace(/\\b/, '(?<!\\$)\\b');
+    }
+
+    //highlights the "verbatim" builtin. making a separate mode for this due to
+    //its variability.
+    var SOL_ASSEMBLY_VERBATIM_MODE = {
+        className: "built_in",
+        begin: SOL_ASSEMBLY_VERBATIM_RE
+    };
+
     var SOL_ASSEMBLY_TITLE_MODE =
         hljs.inherit(hljs.TITLE_MODE, {
             begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
@@ -135,6 +148,7 @@ function baseAssembly(hljs) {
             HEX_QUOTE_STRING_MODE,
             hljs.C_LINE_COMMENT_MODE,
             hljs.C_BLOCK_COMMENT_MODE,
+            SOL_ASSEMBLY_VERBATIM_MODE,
             SOL_NUMBER,
             { // functions
                 className: 'function',
