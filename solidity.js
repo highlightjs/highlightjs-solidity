@@ -482,9 +482,28 @@ function hljsDefineYul(hljs) {
         literal: SOL_ASSEMBLY_KEYWORDS.literal
     };
 
+    var BASE_ASSEMBLY_ENVIRONMENT = baseAssembly(hljs);
+
+    var YUL_APOS_METADATA_STRING_MODE = {
+        className: "built_in",
+        begin: /'\.metadata'/
+    };
+
+    var YUL_QUOTE_METADATA_STRING_MODE = {
+        className: "built_in",
+        begin: /"\.metadata"/
+    };
+
     return hljs.inherit(
-        baseAssembly(hljs),
-        { keywords: YUL_KEYWORDS }
+        BASE_ASSEMBLY_ENVIRONMENT,
+        {
+            keywords: YUL_KEYWORDS,
+            contains: [
+                //prepend these so they take priority
+                YUL_APOS_METADATA_STRING_MODE,
+                YUL_QUOTE_METADATA_STRING_MODE,
+            ].concat(BASE_ASSEMBLY_ENVIRONMENT.contains)
+        }
     );
 }
 
