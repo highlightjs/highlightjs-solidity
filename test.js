@@ -101,3 +101,8 @@ it('verbatim', function () {
     }
   }
 });
+
+it('metadata', function () {
+  const metadata = '".metadata"';
+  assert.deepEqual(getTokens(metadata, 'yul'), [['built_in', metadata]]);
+});
