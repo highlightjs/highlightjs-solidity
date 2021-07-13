@@ -93,6 +93,14 @@ it('yul keywords', function () {
   }
 });
 
+it('yul operators', function () {
+  const operators = ['->', ':='];
+
+  for (const operator of operators) {
+    assert.deepEqual(getTokens(operator, 'yul'), [['operator', operator]]);
+  }
+});
+
 it('verbatim', function () {
   for (let inArgs = 0; inArgs < 100; inArgs++) {
     for (let outArgs = 0; outArgs < 100; outArgs++) {
