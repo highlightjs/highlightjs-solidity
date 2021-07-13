@@ -100,3 +100,12 @@ it('yul operators', function () {
     assert.deepEqual(getTokens(operator, 'yul'), [['operator', operator]]);
   }
 });
+
+it('verbatim', function () {
+  for (let inArgs = 0; inArgs < 100; inArgs++) {
+    for (let outArgs = 0; outArgs < 100; outArgs++) {
+      const verbatim = `verbatim_${inArgs}i_${outArgs}o`;
+      assert.deepEqual(getTokens(verbatim, 'yul'), [['built_in', verbatim]]);
+    }
+  }
+});

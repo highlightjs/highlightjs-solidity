@@ -1,6 +1,6 @@
 {
   "name": "highlightjs-solidity",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "highlight.js syntax definition for Ethereum's Solidity language",
   "main": "solidity.js",
   "files": [],
