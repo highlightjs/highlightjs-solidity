@@ -145,11 +145,6 @@ function baseAssembly(hljs) {
         begin: /:=|->/
     };
 
-    var SOL_ASSEMBLY_PUNCTUATION = {
-        className: 'punctuation',
-        begin: /[{}().,]/
-    };
-
     return {
         keywords: SOL_ASSEMBLY_KEYWORDS,
         lexemes: SOL_ASSEMBLY_LEXEMES_RE,
@@ -163,7 +158,6 @@ function baseAssembly(hljs) {
             SOL_ASSEMBLY_VERBATIM_MODE,
             SOL_NUMBER,
             SOL_ASSEMBLY_OPERATORS,
-            SOL_ASSEMBLY_PUNCTUATION,
             { // functions
                 className: 'function',
                 lexemes: SOL_ASSEMBLY_LEXEMES_RE,
@@ -173,8 +167,7 @@ function baseAssembly(hljs) {
                     SOL_ASSEMBLY_FUNC_PARAMS,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
-                    SOL_ASSEMBLY_OPERATORS,
-                    SOL_ASSEMBLY_PUNCTUATION
+                    SOL_ASSEMBLY_OPERATORS
                 ],
             }
         ]
@@ -270,11 +263,6 @@ function hljsDefineSolidity(hljs) {
     var SOL_OPERATORS = {
         className: 'operator',
         begin: /[+\-!~*\/%<>&^|=]/ //excluding ?: because having : as operator causes problems
-    };
-
-    var SOL_PUNCTUATION = {
-        className: 'punctuation',
-        begin: /[{}()\[\].,?:;]/ //including ?: as punctuation because having : as operator causes problems
     };
 
     var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*/;
@@ -392,7 +380,6 @@ function hljsDefineSolidity(hljs) {
             SOL_NUMBER,
             SOL_SPECIAL_PARAMETERS,
             SOL_OPERATORS,
-            SOL_PUNCTUATION,
             { // functions
                 className: 'function',
                 lexemes: SOL_LEXEMES_RE,
