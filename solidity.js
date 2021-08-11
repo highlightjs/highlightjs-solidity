@@ -61,7 +61,7 @@ var SOL_ASSEMBLY_KEYWORDS = {
         'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
         'create create2 call callcode delegatecall staticcall ' +
         'log0 log1 log2 log3 log4 ' +
-        'chainid origin gasprice blockhash coinbase timestamp number difficulty gaslimit',
+        'chainid origin gasprice basefee blockhash coinbase timestamp number difficulty gaslimit',
     literal:
         'true false'
 };
@@ -395,7 +395,7 @@ function hljsDefineSolidity(hljs) {
             },
             // built-in members
             makeBuiltinProps('msg', 'gas value data sender sig'),
-            makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit number timestamp chainid'),
+            makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit basefee number timestamp chainid'),
             makeBuiltinProps('tx', 'gasprice origin'),
             makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature'),
             makeBuiltinProps('bytes', 'concat'),
