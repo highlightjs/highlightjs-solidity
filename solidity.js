@@ -252,10 +252,7 @@ function hljsDefineSolidity(hljs) {
             'assert require ' +
             'Error Panic ' +
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
-            'log0 log1 log2 log3 log4' +
-            // :NOTE: not really toplevel, but advantageous to have highlighted as if reserved to
-            //        avoid newcomers making mistakes due to accidental name collisions.
-            'send transfer call callcode delegatecall staticcall '
+            'log0 log1 log2 log3 log4'
     };
 
     //note: we always put operators below comments so
