@@ -35,10 +35,6 @@ Doing this will define both `solidity` and `yul` languages.
 
 This package is not currently compatible with highlight.js version 11.
 
-### Advanced
-
-This is a pretty simple package, the only thing you might want to do differently is name the language something other than `solidity`. If you want to do this, simply `import { definer } from 'highlightjs-solidity';` and use it like: `hljs.registerLanguage('othername', definer);`.
-
 ### About the author
 
 Find me at http://pospi.spadgos.com
