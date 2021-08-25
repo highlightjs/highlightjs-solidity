@@ -8,8 +8,6 @@
  * @since:   2016-07-01
  */
 
-var module = module ? module : {};     // shim for browser use
-
 function isNegativeLookbehindAvailable() {
     try {
         new RegExp('(?<!.)');
