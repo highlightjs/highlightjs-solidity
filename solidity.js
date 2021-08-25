@@ -505,5 +505,3 @@ module.exports = function(hljs) {
     hljs.registerLanguage('solidity', hljsDefineSolidity);
     hljs.registerLanguage('yul', hljsDefineYul);
 };
-
-module.exports.definer = hljsDefineSolidity;
