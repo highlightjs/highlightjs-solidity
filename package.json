@@ -3,7 +3,10 @@
   "version": "1.2.2",
   "description": "highlight.js syntax definition for Ethereum's Solidity language",
   "main": "src/index.js",
-  "files": [],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "test": "mocha"
   },
