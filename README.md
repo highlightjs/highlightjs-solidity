@@ -2,20 +2,18 @@
 
 For more about highlight.js, see https://highlightjs.org/
 
-For more about Solidity, see http://solidity.readthedocs.io/
+For more about Solidity, see http://docs.soliditylang.org/
 
 ### Usage
-
-Simply include the `highlight.js` script package in your webpage or node app, load up this module and apply it to `hljs`.
 
 If you're not using a build system and just want to embed this in your webpage:
 
 ```html
-<script type="text/javascript" src="/path/to/highlight.pack.js"></script>
-<script type="text/javascript" src="/path/to/highlightjs-solidity/solidity.js"></script>
+<script type="text/javascript" src="/path/to/highlight.min.js"></script>
+<script type="text/javascript" src="/path/to/solidity.min.js"></script>
+<script type="text/javascript" src="/path/to/yul.min.js"></script>
 <script type="text/javascript">
-    hljs.registerLanguage('solidity', window.hljsDefineSolidity);
-    hljs.initHighlightingOnLoad();
+    hljs.highlightAll();
 </script>
 ```
 
@@ -31,13 +29,15 @@ hljs.initHighlightingOnLoad();
 
 Doing this will define both `solidity` and `yul` languages.
 
+If you want to use this in your webpage, this package uses highlight.js's CDN build system to build its Solidity and Yul grammars.
+
 ### Compatibility
 
 This package is not currently compatible with highlight.js version 11.
 
 ### Advanced
 
-This is a pretty simple package, the only thing you might want to do differently is name the language something other than `solidity`. If you want to do this, simply `import { definer } from 'highlightjs-solidity';` and use it like: `hljs.registerLanguage('othername', definer);`.
+This is a pretty simple package, the only thing you might want to do differently is name the languages something other than `solidity` or `yul`. If you want to do this, simply `import { solidity, yul } from 'highlightjs-solidity';` and do `hljs.registerLanguage('othername1', solidity);` and `hljs.registerLanguage('othername2', yul);`.
 
 ### About the author
 
