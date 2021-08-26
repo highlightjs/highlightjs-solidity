@@ -11,6 +11,7 @@ If you're not using a build system and just want to embed this in your webpage:
 ```html
 <script type="text/javascript" src="/path/to/highlight.min.js"></script>
 <script type="text/javascript" src="/path/to/highlightjs-solidity/dist/solidity.min.js"></script>
+<script type="text/javascript" src="/path/to/highlightjs-solidity/dist/yul.min.js"></script>
 <script type="text/javascript">
     hljs.highlightAll();
 </script>
