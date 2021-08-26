@@ -6,7 +6,17 @@ For more about Solidity, see http://docs.soliditylang.org/
 
 ### Usage
 
-If you're using webpack / rollup / browserify / node, you can just do
+If you're not using a build system and just want to embed this in your webpage:
+
+```html
+<script type="text/javascript" src="/path/to/highlight.min.js"></script>
+<script type="text/javascript" src="/path/to/highlightjs-solidity/dist/solidity.min.js"></script>
+<script type="text/javascript">
+    hljs.highlightAll();
+</script>
+```
+
+If you're using webpack / rollup / browserify / node:
    
 ```javascript
 var hljs = require('highlightjs');
