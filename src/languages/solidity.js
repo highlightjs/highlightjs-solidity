@@ -81,6 +81,7 @@ function hljsDefineSolidity(hljs) {
 
             'import from as using pragma ' +
             'contract interface library is abstract ' +
+            'type ' +
             'assembly',
         literal:
             'true false ' +
@@ -91,7 +92,6 @@ function hljsDefineSolidity(hljs) {
             'this super selfdestruct suicide ' +
             'now ' +
             'msg block tx abi ' +
-            'type ' +
             'blockhash gasleft ' +
             'assert require ' +
             'Error Panic ' +
@@ -132,9 +132,10 @@ function hljsDefineSolidity(hljs) {
         excludeEnd: true,
         keywords: {
             built_in: 'gas value selector address length push pop ' +
-               'send transfer call callcode delegatecall staticcall ' +
-               'balance code codehash ' +
-               'name creationCode runtimeCode interfaceId min max'
+                'send transfer call callcode delegatecall staticcall ' +
+                'balance code codehash ' +
+                'wrap unwrap ' +
+                'name creationCode runtimeCode interfaceId min max'
         },
         relevance: 2,
     };
