@@ -131,11 +131,11 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'gas value selector address length push pop ' +
-                'send transfer call callcode delegatecall staticcall ' +
-                'balance code codehash ' +
-                'wrap unwrap ' +
-                'name creationCode runtimeCode interfaceId min max'
+            built_in: 'gas value selector address length push pop ' + //members of external functions; members of arrays
+                'send transfer call callcode delegatecall staticcall ' + //members of addresses
+                'balance code codehash ' + //more members of addresses
+                'wrap unwrap ' + //members of UDVTs (the types not the values)
+                'name creationCode runtimeCode interfaceId min max' //members of type(...)
         },
         relevance: 2,
     };
