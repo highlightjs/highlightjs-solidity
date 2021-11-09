@@ -194,7 +194,7 @@ function hljsDefineSolidity(hljs) {
         excludeBegin: true,
         excludeEnd: true,
         keywords: {
-            built_in: 'slot offset length'
+            built_in: 'slot offset length address selector'
         },
         relevance: 2,
     };
