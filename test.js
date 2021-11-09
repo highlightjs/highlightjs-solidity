@@ -102,6 +102,7 @@ it('yul operators', function () {
 });
 
 it('verbatim', function () {
+  this.timeout(4000);
   for (let inArgs = 0; inArgs < 100; inArgs++) {
     for (let outArgs = 0; outArgs < 100; outArgs++) {
       const verbatim = `verbatim_${inArgs}i_${outArgs}o`;
