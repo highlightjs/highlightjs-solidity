@@ -239,7 +239,7 @@ function hljsDefineSolidity(hljs) {
             makeBuiltinProps('msg', 'gas value data sender sig'),
             makeBuiltinProps('block', 'blockhash coinbase difficulty gaslimit basefee number timestamp chainid'),
             makeBuiltinProps('tx', 'gasprice origin'),
-            makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature'),
+            makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature encodeCall'),
             makeBuiltinProps('bytes', 'concat'),
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
