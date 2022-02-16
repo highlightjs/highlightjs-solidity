@@ -241,6 +241,7 @@ function hljsDefineSolidity(hljs) {
             makeBuiltinProps('tx', 'gasprice origin'),
             makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature encodeCall'),
             makeBuiltinProps('bytes', 'concat'),
+            makeBuiltinProps('string', 'concat'),
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
