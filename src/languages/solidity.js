@@ -314,6 +314,8 @@ function hljsDefineSolidity(hljs) {
                 contains: [
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_BLOCK_COMMENT_MODE,
+                    hljs.inherit(SOL_APOS_STRING_MODE, { className: 'meta-string' }), //going to count "memory-safe" etc as meta-strings
+                    hljs.inherit(SOL_QUOTE_STRING_MODE, { className: 'meta-string' }),
                     hljs.inherit(SOL_ASSEMBLY_ENVIRONMENT, { //the actual *block* in the assembly section
                         begin: '{', end: '}',
                         endsParent: true,
