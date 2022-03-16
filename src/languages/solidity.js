@@ -79,7 +79,7 @@ function hljsDefineSolidity(hljs) {
             'storage memory calldata ' +
             'external public internal payable pure view private returns ' +
 
-            'import from as using pragma ' +
+            'import from as using global pragma ' +
             'contract interface library is abstract ' +
             'type ' +
             'assembly',
@@ -285,7 +285,7 @@ function hljsDefineSolidity(hljs) {
             { // using
                 beginKeywords: 'using', end: ';',
                 lexemes: SOL_LEXEMES_RE,
-                keywords: 'using for',
+                keywords: 'using for global',
                 contains: [
                     SOL_TITLE_MODE,
                     hljs.C_LINE_COMMENT_MODE,
