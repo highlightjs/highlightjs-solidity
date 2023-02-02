@@ -59,7 +59,7 @@ var SOL_ASSEMBLY_KEYWORDS = {
         'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash ' +
         'create create2 call callcode delegatecall staticcall ' +
         'log0 log1 log2 log3 log4 ' +
-        'chainid origin gasprice basefee blockhash coinbase timestamp number difficulty gaslimit',
+        'chainid origin gasprice basefee blockhash coinbase timestamp number difficulty prevrandao gaslimit',
     literal:
         'true false'
 };
