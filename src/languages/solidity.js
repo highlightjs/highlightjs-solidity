@@ -65,7 +65,7 @@ function hljsDefineSolidity(hljs) {
             'int uint ' + intTypesString + uintTypesString +
             'byte bytes ' + bytesTypesString +
             'fixed ufixed ' + fixedTypesString + ufixedTypesString +
-            'enum struct mapping address ' +
+            'enum struct mapping address unicode' +
 
             'new delete ' +
             'if else for while continue break return throw emit try catch revert ' +
