@@ -65,7 +65,7 @@ function hljsDefineSolidity(hljs) {
             'int uint ' + intTypesString + uintTypesString +
             'byte bytes ' + bytesTypesString +
             'fixed ufixed ' + fixedTypesString + ufixedTypesString +
-            'enum struct mapping address ' +
+            'enum struct mapping address unicode ' +
 
             'new delete ' +
             'if else for while continue break return throw emit try catch revert ' +
@@ -92,7 +92,7 @@ function hljsDefineSolidity(hljs) {
             'this super selfdestruct suicide ' +
             'now ' +
             'msg block tx abi ' +
-            'blockhash gasleft ' +
+            'blockhash gasleft blobhash ' +
             'assert require ' +
             'Error Panic ' +
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
@@ -237,7 +237,7 @@ function hljsDefineSolidity(hljs) {
             },
             // built-in members
             makeBuiltinProps('msg', 'gas value data sender sig'),
-            makeBuiltinProps('block', 'blockhash coinbase difficulty prevrandao gaslimit basefee number timestamp chainid'),
+            makeBuiltinProps('block', 'blockhash blobhash coinbase difficulty prevrandao gaslimit basefee blobbasefee number timestamp chainid'),
             makeBuiltinProps('tx', 'gasprice origin'),
             makeBuiltinProps('abi', 'decode encode encodePacked encodeWithSelector encodeWithSignature encodeCall'),
             makeBuiltinProps('bytes', 'concat'),

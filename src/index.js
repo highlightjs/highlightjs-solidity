@@ -1,3 +1,13 @@
+/*
+Language: Solidity
+Requires: solidity.js, yul.js
+Author: SEE AUTHOR
+Contributors: SEE CONTRIBUTORS
+Description: A statically-typed curly-braces programming language designed for developing smart contracts that run on Ethereum.
+Website: https://docs.soliditylang.org/en/latest/grammar.html
+*/
+
+
 /**
  * highlight.js Solidity syntax highlighting definition
  *
@@ -8,8 +18,8 @@
  * @since:   2016-07-01
  */
 
-const solidityGrammar = require("./languages/solidity.js");
-const yulGrammar = require("./languages/yul.js");
+const solidityGrammar = require("./languages/solidity");
+const yulGrammar = require("./languages/yul");
 
 module.exports = function(hljs) {
     hljs.registerLanguage('solidity', solidityGrammar);
