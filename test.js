@@ -1,7 +1,7 @@
 const assert = require('assert');
 const parse5 = require('parse5');
 
-const hljs = require('highlightjs');
+const hljs = require('highlight.js');
 const defineSolidity = require('.');
 
 defineSolidity(hljs);
@@ -9,22 +9,25 @@ defineSolidity(hljs);
 // Receives a Solidity snippet and returns an array of [type, text] tuples.
 // Type is the detected token type, and text the corresponding source text.
 function getTokens(source, language = 'solidity') {
-  const { value } = hljs.highlight(language, source);
+  const {value} = hljs.highlight(source, {language, source});
   const frag = parse5.parseFragment(value);
 
-  return frag.childNodes.map(function (node) {
+  return frag.childNodes.map(function(node) {
     if (node.nodeName === '#text') {
       return ['none', node.value];
     } else {
-      const type = node.attrs.find(a => a.name === 'class').value.replace(/^hljs-/, '');
+      const type =
+          node.attrs.find(a => a.name === 'class').value.replace(/^hljs-/, '');
       assert(
-        node.childNodes.length === 1 && node.childNodes[0].nodeName === '#text',
-        'Unexpected nested tags',
+          node.childNodes.length === 1 &&
+              node.childNodes[0].nodeName === '#text',
+          'Unexpected nested tags',
       );
       return [type, node.childNodes[0].value];
     }
   });
 }
+
 
 // Taken from the Solidity repo.
 it('numbers', function () {

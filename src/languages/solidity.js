@@ -65,7 +65,7 @@ function hljsDefineSolidity(hljs) {
             'int uint ' + intTypesString + uintTypesString +
             'byte bytes ' + bytesTypesString +
             'fixed ufixed ' + fixedTypesString + ufixedTypesString +
-            'enum struct mapping address unicode' +
+            'enum struct mapping address unicode ' +
 
             'new delete ' +
             'if else for while continue break return throw emit try catch revert ' +
@@ -92,7 +92,7 @@ function hljsDefineSolidity(hljs) {
             'this super selfdestruct suicide ' +
             'now ' +
             'msg block tx abi ' +
-            'blockhash gasleft ' +
+            'blockhash gasleft blobhash ' +
             'assert require ' +
             'Error Panic ' +
             'sha3 sha256 keccak256 ripemd160 ecrecover addmod mulmod ' +
