@@ -1,3 +1,12 @@
+/*
+Language: Solidity
+Requires: solidity.js, yul.js
+Author: SEE AUTHOR
+Contributors: SEE CONTRIBUTORS
+Description: A statically-typed curly-braces programming language designed for developing smart contracts that run on Ethereum.
+Website: https://docs.soliditylang.org/en/latest/grammar.html
+*/
+
 /**
  * highlight.js Solidity syntax highlighting definition
  *
@@ -59,8 +68,7 @@ var SOL_ASSEMBLY_KEYWORDS = {
         'calldataload calldatasize calldatacopy codesize codecopy extcodesize extcodecopy returndatasize returndatacopy extcodehash mcopy ' +
         'create create2 call callcode delegatecall staticcall ' +
         'log0 log1 log2 log3 log4 ' +
-        'chainid origin gasprice basefee blobbasefee blockhash blobhash coinbase timestamp number difficulty prevrandao gaslimit ' +
-        '
+        'chainid origin gasprice basefee blobbasefee blockhash blobhash coinbase timestamp number difficulty prevrandao gaslimit '
     literal:
         'true false'
 };
