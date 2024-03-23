@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/pospi/highlightjs-solidity.git"
+    "url": "git+ssh://git@github.com/highlightjs/highlightjs-solidity.git"
   },
   "keywords": [
     "Solidity",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
-    "highlight.js": "^11.9.0",
+    "highlight.js": "^10.7.3",
     "highlightjs": "^9.16.2",
     "mocha": "^10.3.0",
     "parse5": "^7.1.2"
