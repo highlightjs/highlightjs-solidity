@@ -1,7 +1,7 @@
 const assert = require('assert');
 const parse5 = require('parse5');
 
-const hljs = require('highlightjs');
+const hljs = require('highlight.js');
 const defineSolidity = require('.');
 
 defineSolidity(hljs);
@@ -9,7 +9,7 @@ defineSolidity(hljs);
 // Receives a Solidity snippet and returns an array of [type, text] tuples.
 // Type is the detected token type, and text the corresponding source text.
 function getTokens(source, language = 'solidity') {
-  const { value } = hljs.highlight(language, source);
+  const { value } = hljs.highlight(source, { language });
   const frag = parse5.parseFragment(value);
 
   return frag.childNodes.map(function (node) {

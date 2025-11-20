@@ -59,7 +59,10 @@ function hljsDefineSolidity(hljs) {
     var ufixedTypes = sizePrecisionPairs.map(function(pair) { return 'ufixed' + pair });
     var ufixedTypesString = ufixedTypes.join(' ') + ' ';
 
+    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*/;
+
     var SOL_KEYWORDS = {
+        $pattern: SOL_LEXEMES_RE,
         keyword:
             'var bool string ' +
             'int uint ' + intTypesString + uintTypesString +
@@ -106,14 +109,11 @@ function hljsDefineSolidity(hljs) {
         begin: /[+\-!~*\/%<>&^|=]/ //excluding ?: because having : as operator causes problems
     };
 
-    var SOL_LEXEMES_RE = /[A-Za-z_$][A-Za-z_$0-9]*/;
-
     var SOL_FUNC_PARAMS = {
         className: 'params',
         begin: /\(/, end: /\)/,
         excludeBegin: true,
         excludeEnd: true,
-        lexemes: SOL_LEXEMES_RE,
         keywords: SOL_KEYWORDS,
         contains: [
             hljs.C_LINE_COMMENT_MODE,
@@ -143,7 +143,6 @@ function hljsDefineSolidity(hljs) {
     var SOL_TITLE_MODE =
         hljs.inherit(hljs.TITLE_MODE, {
             begin: /[A-Za-z$_][0-9A-Za-z$_]*/,
-            lexemes: SOL_LEXEMES_RE,
             keywords: SOL_KEYWORDS
         });
 
@@ -161,7 +160,6 @@ function hljsDefineSolidity(hljs) {
             end: /[^A-Za-z0-9$_\.]/,
             excludeBegin: false,
             excludeEnd: true,
-            lexemes: SOL_LEXEMES_RE,
             keywords: {
                 built_in: obj + ' ' + props,
             },
@@ -210,7 +208,6 @@ function hljsDefineSolidity(hljs) {
     return {
         aliases: ['sol'],
         keywords: SOL_KEYWORDS,
-        lexemes: SOL_LEXEMES_RE,
         contains: [
             // basic literal definitions
             SOL_APOS_STRING_MODE,
@@ -224,7 +221,6 @@ function hljsDefineSolidity(hljs) {
             SOL_OPERATORS,
             { // functions
                 className: 'function',
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'function modifier event constructor fallback receive error', end: /[{;]/, excludeEnd: true,
                 contains: [
                     SOL_TITLE_MODE,
@@ -245,11 +241,10 @@ function hljsDefineSolidity(hljs) {
             SOL_RESERVED_MEMBERS,
             { // contracts & libraries & interfaces
                 className: 'class',
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'contract interface library', end: '{', excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
-                    { beginKeywords: 'is', lexemes: SOL_LEXEMES_RE },
+                    { beginKeywords: 'is' },
                     SOL_TITLE_MODE,
                     SOL_FUNC_PARAMS,
                     SOL_SPECIAL_PARAMETERS,
@@ -258,7 +253,6 @@ function hljsDefineSolidity(hljs) {
                 ]
             },
             { // structs & enums
-                lexemes: SOL_LEXEMES_RE,
                 beginKeywords: 'struct enum', end: '{', excludeEnd: true,
                 illegal: /[:"\[\]]/,
                 contains: [
@@ -269,7 +263,6 @@ function hljsDefineSolidity(hljs) {
             },
             { // imports
                 beginKeywords: 'import', end: ';',
-                lexemes: SOL_LEXEMES_RE,
                 keywords: 'import from as',
                 contains: [
                     SOL_TITLE_MODE,
@@ -284,7 +277,6 @@ function hljsDefineSolidity(hljs) {
             },
             { // using
                 beginKeywords: 'using', end: ';',
-                lexemes: SOL_LEXEMES_RE,
                 keywords: 'using for global',
                 contains: [
                     SOL_TITLE_MODE,
@@ -296,8 +288,8 @@ function hljsDefineSolidity(hljs) {
             { // pragmas
                 className: 'meta',
                 beginKeywords: 'pragma', end: ';',
-                lexemes: SOL_LEXEMES_RE,
                 keywords: {
+                    $pattern: SOL_LEXEMES_RE,
                     keyword: 'pragma solidity experimental abicoder',
                     built_in: 'ABIEncoderV2 SMTChecker v1 v2'
                 },
